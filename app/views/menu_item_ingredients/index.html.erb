@@ -1,0 +1,223 @@
+<% content_for :title, "Ingredients - #{@menu_item.name}" %>
+
+<div class="menu-item-ingredients">
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <%= link_to restaurant_menu_item_path(@restaurant, @menu_item), class: "text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900">Ingredients</h1>
+        <p class="text-gray-600 mt-1"><%= @menu_item.name %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross-Contamination Warnings -->
+  <% if @cross_contamination_warnings.any? %>
+    <div class="bg-orange-50 border-4 border-orange-400 rounded-xl shadow-lg p-6 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold text-orange-900">Cross-Contamination Warnings</h2>
+      </div>
+      <p class="text-orange-800 mb-4 font-semibold">This item may have cross-contamination risks with other menu items:</p>
+      <div class="space-y-4">
+        <% @cross_contamination_warnings.each do |warning| %>
+          <div class="bg-white rounded-lg p-4 border-2 border-orange-300">
+            <h3 class="font-bold text-gray-900 mb-2">
+              <%= link_to warning[:menu_item].name, restaurant_menu_item_path(@restaurant, warning[:menu_item]), class: "text-indigo-600 hover:text-indigo-800" %>
+            </h3>
+            <ul class="list-disc list-inside space-y-1 text-sm text-orange-800">
+              <% warning[:risks].each do |risk| %>
+                <li><%= risk[:message] %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Current Ingredients -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Current Ingredients</h2>
+      
+      <% if @menu_item_ingredients.any? %>
+        <div class="space-y-3">
+          <% @menu_item_ingredients.each do |menu_item_ingredient| %>
+            <% ingredient = menu_item_ingredient.ingredient %>
+            <div class="bg-gray-50 rounded-lg p-4 border-2 <%= ingredient.has_allergen? ? 'border-red-300' : 'border-gray-200' %>">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <h3 class="font-bold text-gray-900"><%= ingredient.name %></h3>
+                    <% if ingredient.has_allergen? %>
+                      <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">
+                        <%= ingredient.allergen_display_name %>
+                      </span>
+                    <% end %>
+                  </div>
+                  <div class="text-sm text-gray-600 space-y-1">
+                    <% if menu_item_ingredient.quantity.present? %>
+                      <p><strong>Quantity:</strong> <%= menu_item_ingredient.quantity %></p>
+                    <% end %>
+                    <% if menu_item_ingredient.preparation_method.present? %>
+                      <p><strong>Preparation:</strong> <%= menu_item_ingredient.preparation_method %></p>
+                    <% end %>
+                    <% if ingredient.preparation_area.present? %>
+                      <p><strong>Preparation Area:</strong> <%= ingredient.preparation_area_display %></p>
+                    <% end %>
+                    <% if ingredient.notes.present? %>
+                      <p class="text-xs text-gray-500 italic"><%= ingredient.notes %></p>
+                    <% end %>
+                  </div>
+                </div>
+                <%= button_to restaurant_menu_item_ingredient_path(@restaurant, @menu_item, menu_item_ingredient),
+                            method: :delete,
+                            class: "text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors",
+                            data: { turbo_confirm: "Remove this ingredient?" } do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="bg-gray-50 rounded-lg p-8 text-center border-2 border-dashed border-gray-200">
+          <p class="text-gray-600 mb-2">No ingredients added yet</p>
+          <p class="text-sm text-gray-500">Add ingredients to track allergens and cross-contamination risks</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Add Ingredient Form -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Add Ingredient</h2>
+      
+      <%= form_with url: restaurant_menu_item_ingredients_path(@restaurant, @menu_item), method: :post, local: true, class: "space-y-6" do |f| %>
+        <div>
+          <%= f.label :ingredient_name, "Ingredient Name", class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+            Ingredient Name <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.text_field :ingredient_name, 
+                          required: true,
+                          list: "ingredients_list",
+                          class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900",
+                          placeholder: "e.g., Chicken Breast, Olive Oil" %>
+          <datalist id="ingredients_list">
+            <% @ingredients.each do |ingredient| %>
+              <option value="<%= ingredient.name %>">
+            <% end %>
+          </datalist>
+          <p class="text-xs text-gray-500 mt-1">Type to search existing ingredients or enter a new one</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :allergen_type, "Allergen Type", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.select :allergen_type,
+                        options_for_select([
+                          ['No Allergen', 'none'],
+                          ['Tree Nuts', 'nuts'],
+                          ['Peanuts', 'peanuts'],
+                          ['Shellfish', 'shellfish'],
+                          ['Fish', 'fish'],
+                          ['Eggs', 'eggs'],
+                          ['Milk/Dairy', 'milk'],
+                          ['Soy', 'soy'],
+                          ['Wheat/Gluten', 'wheat'],
+                          ['Sesame', 'sesame'],
+                          ['Sulfites', 'sulfites']
+                        ]),
+                        { include_blank: 'Select if applicable' },
+                        { class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900" } %>
+          </div>
+
+          <div>
+            <%= f.label :preparation_area, "Preparation Area", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.select :preparation_area,
+                        options_for_select([
+                          ['Grill', 'grill'],
+                          ['Fryer', 'fryer'],
+                          ['Oven', 'oven'],
+                          ['Stovetop', 'stovetop'],
+                          ['Prep Station', 'prep_station'],
+                          ['Salad Station', 'salad_station'],
+                          ['Dessert Station', 'dessert_station'],
+                          ['Beverage Station', 'beverage_station'],
+                          ['Other', 'other']
+                        ]),
+                        { include_blank: 'Select if applicable' },
+                        { class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900" } %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :quantity, "Quantity (optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.text_field :quantity, 
+                            class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900",
+                            placeholder: "e.g., 2 cups, 1 tbsp" %>
+          </div>
+
+          <div>
+            <%= f.label :preparation_method, "Preparation Method (optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.text_field :preparation_method, 
+                            class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900",
+                            placeholder: "e.g., chopped, diced, raw" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :notes, "Notes (optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+          <%= f.text_area :notes, 
+                         rows: 3,
+                         class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 resize-none",
+                         placeholder: "Additional notes about this ingredient" %>
+        </div>
+
+        <%= f.submit "Add Ingredient", class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="mt-8 bg-indigo-50 rounded-xl p-6 border-2 border-indigo-200">
+    <h3 class="text-lg font-bold text-indigo-900 mb-4">Ingredient Summary</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <p class="text-sm text-indigo-700 mb-1">Total Ingredients</p>
+        <p class="text-2xl font-bold text-indigo-900"><%= @menu_item_ingredients.count %></p>
+      </div>
+      <div>
+        <p class="text-sm text-indigo-700 mb-1">Allergenic Ingredients</p>
+        <p class="text-2xl font-bold text-red-600">
+          <%= @menu_item.ingredients.allergenic.count %>
+        </p>
+      </div>
+      <div>
+        <p class="text-sm text-indigo-700 mb-1">Preparation Areas</p>
+        <p class="text-2xl font-bold text-indigo-900"><%= @menu_item.preparation_areas.count %></p>
+      </div>
+    </div>
+    <% if @menu_item.ingredient_allergens.any? %>
+      <div class="mt-4 pt-4 border-t border-indigo-300">
+        <p class="text-sm font-semibold text-indigo-800 mb-2">Detected Allergens from Ingredients:</p>
+        <div class="flex flex-wrap gap-2">
+          <% @menu_item.ingredient_allergens.each do |allergen| %>
+            <span class="bg-red-100 text-red-800 text-sm font-bold px-3 py-1 rounded-full">
+              <%= MenuItem.common_allergens[allergen] || allergen.humanize %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

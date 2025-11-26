@@ -1,0 +1,77 @@
+<% content_for :title, "New Split Test - #{@restaurant.name}" %>
+
+<div class="split-test-form-page">
+  <div class="mb-8">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">New Split Test</h1>
+    <p class="text-gray-600 text-lg"><%= @restaurant.name %></p>
+  </div>
+
+  <%= form_with model: [@restaurant, @split_test], local: true, class: "bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100" do |form| %>
+    <% if @split_test.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-6 mb-8 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">Errors:</h3>
+        <ul class="list-disc pl-5">
+          <% @split_test.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="space-y-6">
+      <div>
+        <%= form.label :name, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+          Test Name <span class="text-red-500">*</span>
+        <% end %>
+        <%= form.text_field :name, required: true, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "e.g., Burger Description Test" %>
+      </div>
+
+      <div>
+        <%= form.label :test_type, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+          Test Type <span class="text-red-500">*</span>
+        <% end %>
+        <%= form.select :test_type,
+                         [
+                           ['Description', 'description'],
+                           ['Placement', 'placement'],
+                           ['Image', 'image'],
+                           ['Price', 'price']
+                         ],
+                         { prompt: "Select test type..." },
+                         { required: true, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+        <p class="mt-1 text-xs text-gray-500">What aspect of the menu item do you want to test?</p>
+      </div>
+
+      <div>
+        <%= form.label :menu_item_id, "Menu Item", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.collection_select :menu_item_id,
+                                    @menu_items,
+                                    :id,
+                                    :name,
+                                    { prompt: "Select menu item..." },
+                                    { class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+        <p class="mt-1 text-xs text-gray-500">Optional: Leave blank for placement tests</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= form.check_box :auto_apply_winner %>
+        <%= form.label :auto_apply_winner, "Automatically apply winner when test completes", class: "text-sm font-semibold text-gray-700" %>
+      </div>
+
+      <div>
+        <%= form.label :notes, "Notes", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.text_area :notes, rows: 4, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "Add any notes about this test..." %>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-6 border-t-2 border-gray-200 mt-8">
+        <% begin %>
+          <%= link_to "Cancel", restaurant_split_tests_path(@restaurant), class: "w-full sm:w-auto px-8 py-3 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all duration-200 text-center" %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/split_tests", class: "w-full sm:w-auto px-8 py-3 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all duration-200 text-center" %>
+        <% end %>
+        <%= form.submit "Create Split Test", class: "w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+

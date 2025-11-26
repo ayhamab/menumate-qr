@@ -1,0 +1,140 @@
+<% content_for :title, "#{@compliance_report.title} - Compliance Report" %>
+
+<div class="compliance-report-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @compliance_report.title %></h1>
+        <p class="text-gray-600 text-lg">
+          <%= @compliance_report.region&.name || 'All Regions' %> • 
+          <%= @compliance_report.created_at.strftime("%B %d, %Y") %>
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_compliance_reports_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% unless @compliance_report.shared_with_restaurant? %>
+          <% begin %>
+            <%= link_to share_restaurant_compliance_report_path(@restaurant, @compliance_report), method: :patch, class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+              </svg>
+              <span>Share Report</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports/#{@compliance_report.id}/share", method: :patch, class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              <span>Share Report</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Summary -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 <%= @compliance_report.compliance_percentage >= 100 ? 'border-green-500' : @compliance_report.compliance_percentage >= 80 ? 'border-yellow-500' : 'border-red-500' %>">
+    <div class="text-center">
+      <div class="mb-6">
+        <div class="inline-block bg-<%= @compliance_report.compliance_percentage >= 100 ? 'green' : @compliance_report.compliance_percentage >= 80 ? 'yellow' : 'red' %>-100 rounded-full p-6 mb-4">
+          <h2 class="text-5xl font-extrabold text-<%= @compliance_report.compliance_percentage >= 100 ? 'green' : @compliance_report.compliance_percentage >= 80 ? 'yellow' : 'red' %>-600">
+            <%= @compliance_report.compliance_percentage %>%
+          </h2>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Overall Compliance</h3>
+        <p class="text-gray-600">
+          <% if @compliance_report.compliance_percentage >= 100 %>
+            All menu items are compliant with regional dietary laws.
+          <% elsif @compliance_report.compliance_percentage >= 80 %>
+            Most menu items are compliant. Some items need attention.
+          <% else %>
+            Significant compliance issues found. Immediate action required.
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Violations Summary -->
+  <% if @violations.any? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Violations Found</h2>
+      <div class="space-y-4">
+        <% @violations.group_by { |v| v['type'] || v[:type] }.each do |type, violations| %>
+          <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+            <h3 class="text-lg font-bold text-red-900 mb-3 capitalize"><%= type.humanize %></h3>
+            <ul class="space-y-2">
+              <% violations.first(10).each do |violation| %>
+                <li class="text-sm text-red-800 flex items-start gap-2">
+                  <svg class="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  <span><%= violation['message'] || violation[:message] %></span>
+                </li>
+              <% end %>
+            </ul>
+            <% if violations.count > 10 %>
+              <p class="text-xs text-red-600 mt-2 font-semibold">
+                +<%= violations.count - 10 %> more violations of this type
+              </p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Recommendations -->
+  <% if @recommendations.any? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Recommendations</h2>
+      <div class="space-y-3">
+        <% @recommendations.each do |recommendation| %>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p class="text-sm text-blue-900"><%= recommendation['message'] || recommendation[:message] || recommendation %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Report Details -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Report Details</h2>
+    <div class="space-y-4">
+      <div>
+        <p class="text-sm font-semibold text-gray-600 mb-1">Report Type</p>
+        <p class="text-gray-900"><%= @compliance_report.report_type.humanize %></p>
+      </div>
+      <% if @compliance_report.summary.present? %>
+        <div>
+          <p class="text-sm font-semibold text-gray-600 mb-1">Summary</p>
+          <p class="text-gray-900"><%= @compliance_report.summary %></p>
+        </div>
+      <% end %>
+      <div>
+        <p class="text-sm font-semibold text-gray-600 mb-1">Generated</p>
+        <p class="text-gray-900"><%= @compliance_report.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+      </div>
+      <% if @compliance_report.shared_with_restaurant? %>
+        <div>
+          <p class="text-sm font-semibold text-gray-600 mb-1">Shared</p>
+          <p class="text-gray-900"><%= @compliance_report.shared_at&.strftime("%B %d, %Y at %I:%M %p") %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

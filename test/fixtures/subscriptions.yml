@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  restaurant: one
+  stripe_subscription_id: MyString
+  stripe_customer_id: MyString
+  plan_name: MyString
+  status: MyString
+  current_period_start: 2025-11-20 09:06:25
+  current_period_end: 2025-11-20 09:06:25
+  cancel_at_period_end: false
+
+two:
+  restaurant: two
+  stripe_subscription_id: MyString
+  stripe_customer_id: MyString
+  plan_name: MyString
+  status: MyString
+  current_period_start: 2025-11-20 09:06:25
+  current_period_end: 2025-11-20 09:06:25
+  cancel_at_period_end: false

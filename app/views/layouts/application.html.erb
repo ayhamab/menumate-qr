@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Menumate Qr" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Menumate Qr">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="MenuMate QR - Digital menu solution for restaurants with full accessibility support">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50 min-h-screen" data-restaurant-id="<%= defined?(@restaurant) ? @restaurant&.id : nil %>">
+    <!-- Skip Links for Keyboard Navigation -->
+    <div class="sr-only focus-within:not-sr-only focus-within:absolute focus-within:top-4 focus-within:left-4 focus-within:z-50">
+      <%= link_to "Skip to main content", "#main-content", class: "px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+      <%= link_to "Skip to navigation", "#main-navigation", class: "px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ml-2" %>
+    </div>
+
+    <!-- ARIA Live Region for Dynamic Announcements -->
+    <div id="aria-live-region" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <!-- Flash Messages with ARIA -->
+    <% if notice %>
+      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert" aria-live="polite" aria-atomic="true">
+        <p class="font-bold">Success</p>
+        <p><%= notice %></p>
+      </div>
+    <% end %>
+    <% if alert %>
+      <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert" aria-live="assertive" aria-atomic="true">
+        <p class="font-bold">Alert</p>
+        <p><%= alert %></p>
+      </div>
+    <% end %>
+
+    <% unless controller_name == 'welcome' && action_name == 'index' %>
+      <nav id="main-navigation" class="bg-white shadow-md mb-6" role="navigation" aria-label="Main navigation">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <div class="flex items-center space-x-8">
+              <% begin %>
+                <%= link_to root_path, class: "text-2xl font-bold text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded", aria_label: "MenuMate QR - Home" do %>
+                  <span aria-hidden="true">MenuMate QR</span>
+                  <span class="sr-only">MenuMate QR - Home</span>
+                <% end %>
+              <% rescue NoMethodError, NameError %>
+                <%= link_to "/", class: "text-2xl font-bold text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded", aria_label: "MenuMate QR - Home" do %>
+                  <span aria-hidden="true">MenuMate QR</span>
+                  <span class="sr-only">MenuMate QR - Home</span>
+                <% end %>
+              <% end %>
+              <% begin %>
+                <%= link_to "Discover", discover_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1", aria_label: "Discover restaurants" %>
+              <% rescue NoMethodError, NameError %>
+                <%= link_to "Discover", "/discover", class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1", aria_label: "Discover restaurants" %>
+              <% end %>
+              <% begin %>
+                <%= link_to "Restaurants", restaurants_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1", aria_label: "View all restaurants" %>
+              <% rescue NoMethodError, NameError %>
+                <%= link_to "Restaurants", "/restaurants", class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1", aria_label: "View all restaurants" %>
+              <% end %>
+              <% if user_signed_in? && current_user.corporate_accounts.active.any? %>
+                <%= link_to "Corporate Accounts", corporate_accounts_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200" %>
+              <% end %>
+              <% if user_signed_in? %>
+                <%= link_to "API Keys", api_keys_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200" %>
+                <%= link_to "API Docs", api_documentation_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200" %>
+              <% end %>
+            </div>
+            <div class="flex items-center space-x-4">
+              <% if user_signed_in? %>
+                <span class="text-gray-600 text-sm">Signed in as <strong><%= current_user.email %></strong></span>
+                <%= link_to "Admin", admin_brand_analytics_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200" %>
+                <%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200" %>
+              <% else %>
+                <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition duration-200" %>
+                <%= link_to "Sign Up", new_user_registration_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main id="main-content" role="main" tabindex="-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <%= yield %>
+        </div>
+      </main>
+    <% else %>
+      <%= yield %>
+    <% end %>
+  </body>
+</html>

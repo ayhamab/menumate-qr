@@ -1,0 +1,151 @@
+<% content_for :title, "Import Menu Items - #{@restaurant.name}" %>
+
+<div class="menu-items-import">
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <%= link_to restaurant_menu_items_path(@restaurant), class: "text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900">Import Menu Items</h1>
+        <p class="text-gray-600 mt-1">Upload a CSV file to bulk import menu items</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Upload Form -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Upload CSV File</h2>
+      
+      <%= form_with url: restaurant_menu_items_imports_path(@restaurant), method: :post, local: true, multipart: true, class: "space-y-6" do |f| %>
+        <div>
+          <%= f.label :csv_file, "CSV File", class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+            Select CSV File <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.file_field :csv_file, 
+                          accept: ".csv,text/csv",
+                          required: true,
+                          class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all duration-200" %>
+          <p class="text-xs text-gray-500 mt-2">Maximum file size: 10MB. Supported format: CSV (comma-separated values)</p>
+        </div>
+
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+          <h3 class="text-sm font-semibold text-blue-900 mb-2">Import Options</h3>
+          <ul class="text-sm text-blue-800 space-y-1">
+            <li>• Items will be added to your existing menu</li>
+            <li>• Duplicate items (same name) will be created as separate entries</li>
+            <li>• Invalid rows will be skipped with error messages</li>
+            <li>• You can review and edit imported items after upload</li>
+          </ul>
+        </div>
+
+        <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
+          <%= f.submit "Import Menu Items", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" %>
+          <%= link_to restaurant_menu_items_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-xl transition-all duration-200" do %>
+            Cancel
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Instructions & Sample -->
+    <div class="space-y-6">
+      <!-- Instructions -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">CSV Format Guide</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Required Columns</h3>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-indigo-600">name</span>
+                <span class="text-gray-600">- Menu item name (required)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-indigo-600">price</span>
+                <span class="text-gray-600">- Item price (required, numbers only)</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Optional Columns</h3>
+            <ul class="space-y-2 text-sm text-gray-700">
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-purple-600">description</span>
+                <span class="text-gray-600">- Item description</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-purple-600">category</span>
+                <span class="text-gray-600">- Category (e.g., Appetizers, Main Courses)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-purple-600">dietary_tags</span>
+                <span class="text-gray-600">- Comma-separated tags (vegan, gluten-free, etc.)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-purple-600">allergens</span>
+                <span class="text-gray-600">- Comma-separated allergens (dairy, nuts, etc.)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-purple-600">position</span>
+                <span class="text-gray-600">- Display order (number)</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+            <h4 class="text-sm font-semibold text-yellow-900 mb-2">💡 Tips</h4>
+            <ul class="text-xs text-yellow-800 space-y-1">
+              <li>• Column names are case-insensitive</li>
+              <li>• Prices can include currency symbols ($12.99 or 12.99)</li>
+              <li>• Use commas or semicolons to separate multiple tags/allergens</li>
+              <li>• Empty rows will be skipped</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sample CSV -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Sample CSV</h2>
+          <%= link_to restaurant_menu_items_import_path(@restaurant, format: :csv), 
+                      class: "text-indigo-600 hover:text-indigo-800 font-semibold text-sm flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Download Sample
+          <% end %>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4 overflow-x-auto">
+          <pre class="text-xs font-mono text-gray-700 whitespace-pre"><%= @sample_csv %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Display (if any) -->
+  <% if @errors.present? %>
+    <div class="mt-8 bg-red-50 border-2 border-red-300 rounded-xl p-6">
+      <h3 class="text-lg font-bold text-red-900 mb-4">Import Errors</h3>
+      <div class="space-y-3">
+        <% @errors.each do |error| %>
+          <div class="bg-white rounded-lg p-4 border border-red-200">
+            <p class="font-semibold text-red-900 mb-1">Row <%= error[:row] %>: <%= error[:name] %></p>
+            <ul class="text-sm text-red-700 list-disc list-inside">
+              <% error[:errors].each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

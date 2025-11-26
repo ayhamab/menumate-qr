@@ -1,0 +1,10 @@
+<% if report.errors.any? %>
+  <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
+    <ul class="list-disc list-inside text-red-700 text-sm">
+      <% report.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+

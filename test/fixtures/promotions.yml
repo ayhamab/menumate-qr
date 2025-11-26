@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  restaurant: one
+  title: MyString
+  description: MyText
+  discount_type: MyString
+  discount_value: 9.99
+  start_date: 2025-11-20 08:46:55
+  end_date: 2025-11-20 08:46:55
+  active: false
+
+two:
+  restaurant: two
+  title: MyString
+  description: MyText
+  discount_type: MyString
+  discount_value: 9.99
+  start_date: 2025-11-20 08:46:55
+  end_date: 2025-11-20 08:46:55
+  active: false

@@ -1,0 +1,2 @@
+module MenuItems::AiAnalysisHelper
+end

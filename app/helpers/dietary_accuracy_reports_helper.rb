@@ -1,0 +1,2 @@
+module DietaryAccuracyReportsHelper
+end

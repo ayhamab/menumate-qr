@@ -1,0 +1,154 @@
+<%= form_with(model: restaurant, local: true, class: "bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100") do |form| %>
+  <% if restaurant.errors.any? %>
+    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-6 mb-8 rounded-lg" role="alert">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-4 flex-1">
+          <h3 class="text-lg font-semibold text-red-800 mb-2">
+            <%= pluralize(restaurant.errors.count, "error") %> prohibited this restaurant from being saved:
+          </h3>
+          <div class="text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% restaurant.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="space-y-6">
+    <!-- Name Field -->
+    <div>
+      <%= form.label :name, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Restaurant Name <span class="text-red-500">*</span>
+      <% end %>
+      <%= form.text_field :name, 
+                          required: true,
+                          class: "w-full px-4 py-3 border-2 #{restaurant.errors[:name].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400",
+                          placeholder: "Enter restaurant name" %>
+      <% if restaurant.errors[:name].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= restaurant.errors[:name].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">The name of your restaurant (2-100 characters)</p>
+      <% end %>
+    </div>
+
+    <!-- Description Field -->
+    <div>
+      <%= form.label :description, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Description
+      <% end %>
+      <%= form.text_area :description, 
+                         rows: 5,
+                         class: "w-full px-4 py-3 border-2 #{restaurant.errors[:description].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400 resize-none",
+                         placeholder: "Describe your restaurant, cuisine type, specialties, atmosphere, etc." %>
+      <% if restaurant.errors[:description].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= restaurant.errors[:description].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">A brief description of your restaurant (max 1000 characters)</p>
+      <% end %>
+    </div>
+
+    <!-- Cuisine Field -->
+    <div>
+      <%= form.label :cuisine, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Cuisine Type
+      <% end %>
+      <%= form.select :cuisine, 
+                      options_for_select([
+                        ['', ''],
+                        ['American', 'American'],
+                        ['Italian', 'Italian'],
+                        ['Mexican', 'Mexican'],
+                        ['Chinese', 'Chinese'],
+                        ['Japanese', 'Japanese'],
+                        ['Thai', 'Thai'],
+                        ['Indian', 'Indian'],
+                        ['Mediterranean', 'Mediterranean'],
+                        ['French', 'French'],
+                        ['Greek', 'Greek'],
+                        ['Spanish', 'Spanish'],
+                        ['Middle Eastern', 'Middle Eastern'],
+                        ['Korean', 'Korean'],
+                        ['Vietnamese', 'Vietnamese'],
+                        ['BBQ', 'BBQ'],
+                        ['Seafood', 'Seafood'],
+                        ['Steakhouse', 'Steakhouse'],
+                        ['Vegetarian', 'Vegetarian'],
+                        ['Vegan', 'Vegan'],
+                        ['Fusion', 'Fusion'],
+                        ['Fast Food', 'Fast Food'],
+                        ['Cafe', 'Cafe'],
+                        ['Bakery', 'Bakery'],
+                        ['Pizza', 'Pizza'],
+                        ['Other', 'Other']
+                      ], restaurant.cuisine),
+                      {},
+                      { class: "w-full px-4 py-3 border-2 #{restaurant.errors[:cuisine].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900" } %>
+      <% if restaurant.errors[:cuisine].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= restaurant.errors[:cuisine].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Select the primary cuisine type (helps customers find your restaurant)</p>
+      <% end %>
+    </div>
+
+    <!-- Address Field -->
+    <div>
+      <%= form.label :address, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Address <span class="text-red-500">*</span>
+      <% end %>
+      <%= form.text_field :address, 
+                          required: true,
+                          class: "w-full px-4 py-3 border-2 #{restaurant.errors[:address].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400",
+                          placeholder: "Enter full address (street, city, state, zip code)" %>
+      <% if restaurant.errors[:address].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= restaurant.errors[:address].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">The complete address of your restaurant (5-255 characters)</p>
+      <% end %>
+    </div>
+
+    <!-- Phone Number Field -->
+    <div>
+      <%= form.label :phone_number, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Phone Number
+      <% end %>
+      <%= form.text_field :phone_number, 
+                          type: "tel",
+                          class: "w-full px-4 py-3 border-2 #{restaurant.errors[:phone_number].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400",
+                          placeholder: "e.g., (555) 123-4567 or +1-555-123-4567" %>
+      <% if restaurant.errors[:phone_number].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= restaurant.errors[:phone_number].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Contact phone number (optional, max 20 characters)</p>
+      <% end %>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-6 border-t-2 border-gray-200 mt-8">
+      <% begin %>
+        <%= link_to "Cancel", restaurants_path, class: "w-full sm:w-auto px-8 py-3 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all duration-200 text-center" %>
+      <% rescue NoMethodError, NameError %>
+        <%= link_to "Cancel", "/restaurants", class: "w-full sm:w-auto px-8 py-3 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all duration-200 text-center" %>
+      <% end %>
+      <%= form.submit restaurant.new_record? ? "Create Restaurant" : "Update Restaurant", class: "w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" %>
+    </div>
+  </div>
+<% end %>

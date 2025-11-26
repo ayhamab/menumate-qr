@@ -1,0 +1,50 @@
+<% content_for :title, "Welcome to MenuMate QR!" %>
+
+<div class="onboarding-complete">
+  <div class="max-w-4xl mx-auto text-center py-20">
+    <div class="bg-green-500 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
+      <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    
+    <h1 class="text-5xl font-extrabold text-gray-900 mb-6">Welcome to MenuMate QR!</h1>
+    <p class="text-xl text-gray-600 mb-12">Your restaurant is all set up and ready to go</p>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Get Started</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <%= link_to restaurants_path, class: "bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-200 rounded-xl p-6 transition-all duration-200" do %>
+          <svg class="w-12 h-12 text-indigo-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">View Dashboard</h3>
+          <p class="text-sm text-gray-600">Manage your restaurant and menu</p>
+        <% end %>
+        
+        <%= link_to new_restaurant_menu_item_path(Restaurant.find(params[:restaurant_id])), class: "bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-xl p-6 transition-all duration-200" do %>
+          <svg class="w-12 h-12 text-purple-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">Add Menu Items</h3>
+          <p class="text-sm text-gray-600">Build out your menu</p>
+        <% end %>
+        
+        <%= link_to restaurant_path(Restaurant.find(params[:restaurant_id])), class: "bg-pink-50 hover:bg-pink-100 border-2 border-pink-200 rounded-xl p-6 transition-all duration-200" do %>
+          <svg class="w-12 h-12 text-pink-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">View QR Code</h3>
+          <p class="text-sm text-gray-600">Download and share</p>
+        <% end %>
+      </div>
+    </div>
+
+    <%= link_to restaurants_path, class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 text-lg" do %>
+      <span>Go to Dashboard</span>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    <% end %>
+  </div>
+</div>

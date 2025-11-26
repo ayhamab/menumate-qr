@@ -1,0 +1,1124 @@
+<% content_for :title, "#{@restaurant.name} - MenuMate QR" %>
+
+<div class="restaurant-show">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-2xl overflow-hidden mb-8">
+    <div class="px-8 py-10 md:px-12 md:py-16">
+      <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-4">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+              <%= @restaurant.name %>
+            </h1>
+            <% if @restaurant.user.present? %>
+              <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                Verified
+              </span>
+            <% end %>
+          </div>
+          <% if @restaurant.description.present? %>
+            <p class="text-indigo-100 text-lg md:text-xl leading-relaxed max-w-2xl mb-4">
+              <%= @restaurant.description %>
+            </p>
+          <% end %>
+          <div class="flex flex-wrap items-center gap-4 text-indigo-100 text-sm">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span>Created <%= time_ago_in_words(@restaurant.created_at) %> ago</span>
+            </div>
+            <% if @restaurant.menu_items.any? %>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span><%= pluralize(@restaurant.menu_items.count, 'menu item') %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <% if restaurant_owner?(@restaurant) %>
+          <div class="flex gap-3 flex-shrink-0">
+            <% begin %>
+              <%= link_to edit_restaurant_path(@restaurant), class: "bg-white text-indigo-600 hover:bg-indigo-50 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit</span>
+              <% end %>
+            <% rescue NoMethodError, NameError %>
+              <%= link_to "/restaurants/#{@restaurant.id}/edit", class: "bg-white text-indigo-600 hover:bg-indigo-50 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit</span>
+              <% end %>
+            <% end %>
+            <%= link_to restaurant_path(@restaurant), 
+                        data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{@restaurant.name}? This action cannot be undone." }, 
+                        class: "bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Delete</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Section -->
+  <div class="mb-8">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-8 py-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 p-3 rounded-xl">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Menu</h2>
+              <% if @restaurant.menu_items.any? %>
+                <p class="text-gray-600 text-sm mt-1"><%= pluralize(@restaurant.menu_items.count, 'item') %> available</p>
+              <% end %>
+            </div>
+          </div>
+        <div class="flex items-center gap-3">
+          <% if has_consultant?(@restaurant) %>
+            <span class="bg-purple-100 text-purple-700 text-sm font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              Consultant Managed
+            </span>
+          <% end %>
+          <% if @restaurant.menu_items.any? %>
+            <span class="bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full">
+              <%= @restaurant.menu_items.count %>
+            </span>
+          <% end %>
+              <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_restaurant_team_index_path(@restaurant), class: "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Team</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/team", class: "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Team</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_split_tests_path(@restaurant), class: "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Split Tests</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/split_tests", class: "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Split Tests</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_recipes_path(@restaurant), class: "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span>Recipes</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/recipes", class: "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span>Recipes</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_training_modules_path(@restaurant), class: "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span>Training</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/training_modules", class: "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span>Training</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to marketplace_suppliers_path, class: "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Marketplace</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/marketplace/suppliers", class: "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Marketplace</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_compliance_reports_path(@restaurant), class: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>Compliance</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports", class: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>Compliance</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_menu_predictions_path(@restaurant), class: "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>ML Predictions</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/menu_predictions", class: "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>ML Predictions</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_food_waste_analytics_index_path(@restaurant), class: "bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Waste Analytics</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/food_waste_analytics", class: "bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Waste Analytics</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_analytics_index_path(@restaurant), class: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Analytics</span>
+                  <% end %>
+                <% rescue %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/analytics", class: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Analytics</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <%= link_to new_restaurant_menu_item_path(@restaurant), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  <span>Add Menu Item</span>
+                <% end %>
+              <% end %>
+            <% begin %>
+              <%= link_to restaurant_dietary_feedbacks_path(@restaurant), class: "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Dietary Feedback</span>
+                <% if @restaurant.dietary_feedbacks.unresolved.any? %>
+                  <span class="bg-white text-pink-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                    <%= @restaurant.dietary_feedbacks.unresolved.count %>
+                  </span>
+                <% end %>
+              <% end %>
+            <% rescue NoMethodError, NameError %>
+              <%= link_to "/restaurants/#{@restaurant.id}/dietary_feedbacks", class: "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Dietary Feedback</span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+        </div>
+        <div class="p-8">
+          <% if @restaurant.menu_items.any? %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <% @restaurant.menu_items.each do |item| %>
+                <div class="bg-white border-2 <%= item.has_allergens? ? 'border-red-300 hover:border-red-400' : 'border-gray-200 hover:border-indigo-300' %> rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 <%= 'ring-2 ring-indigo-100' if restaurant_owner?(@restaurant) %> relative">
+                  <!-- Allergy Warning Badge -->
+                  <% if item.has_allergens? %>
+                    <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full shadow-md flex items-center gap-1 z-10">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                      <span class="text-xs font-bold">ALLERGENS</span>
+                    </div>
+                  <% end %>
+                  
+                  <!-- Image Section -->
+                  <% if item.image.attached? %>
+                    <div class="w-full h-48 overflow-hidden bg-gray-100">
+                      <%= image_tag item.image, class: "w-full h-full object-cover hover:scale-110 transition-transform duration-300", alt: item.name %>
+                    </div>
+                  <% end %>
+                  
+                  <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                      <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-900 text-lg mb-2"><%= item.name %></h3>
+                        <% if item.description.present? %>
+                          <p class="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2"><%= item.description %></p>
+                        <% end %>
+                        <div class="mb-3">
+                          <p class="text-2xl font-bold text-indigo-600">$<%= number_with_precision(item.price, precision: 2) %></p>
+                        </div>
+                        
+                        <!-- Allergy Warning -->
+                        <% if item.has_allergens? %>
+                          <div class="mb-3 p-2 bg-red-50 border border-red-300 rounded-md">
+                            <div class="flex items-center gap-1.5 mb-1">
+                              <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                              </svg>
+                              <span class="text-xs font-bold text-red-800">Contains:</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                              <% item.allergens.each do |allergen| %>
+                                <span class="text-xs font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded">
+                                  <%= MenuItem.common_allergens[allergen.to_s] || allergen.humanize %>
+                                </span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                        
+                      <!-- Dietary Tags Display -->
+                      <% if item.dietary_tags.present? && item.dietary_tags.any? %>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                          <% item.dietary_tags.each do |tag| %>
+                            <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                              <%= tag.humanize %>
+                            </span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                      </div>
+                    </div>
+                    <!-- Collaboration Buttons -->
+                    <div class="mb-3 space-y-2">
+                      <!-- Team Collaboration Buttons -->
+                      <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                        <div class="flex gap-2">
+                          <% begin %>
+                            <%= link_to restaurant_menu_item_assignments_path(@restaurant, item), class: "flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                              </svg>
+                              <span>Assign</span>
+                            <% end %>
+                            <%= link_to restaurant_menu_item_comments_path(@restaurant, item), class: "flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                              </svg>
+                              <span>Comments</span>
+                            <% end %>
+                          <% rescue NoMethodError, NameError %>
+                            <%= link_to "/restaurants/#{@restaurant.id}/menu_items/#{item.id}/menu_item_assignments", class: "flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                              </svg>
+                              <span>Assign</span>
+                            <% end %>
+                            <%= link_to "/restaurants/#{@restaurant.id}/menu_items/#{item.id}/menu_item_comments", class: "flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                              </svg>
+                              <span>Comments</span>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                    
+                    <!-- Edit/Delete Options (Owners Only) -->
+                    <% if restaurant_owner?(@restaurant) %>
+                      <div class="flex items-center gap-2 pt-4 border-t border-gray-200">
+                      <%= link_to edit_restaurant_menu_item_path(@restaurant, item), class: "flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <span>Edit</span>
+                      <% end %>
+                      <%= link_to restaurant_menu_item_path(@restaurant, item), 
+                                  data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete '#{item.name}'? This action cannot be undone." }, 
+                                  class: "flex-1 bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span>Delete</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-12 border-2 border-dashed border-indigo-200 text-center">
+              <svg class="w-16 h-16 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <p class="text-gray-600 text-lg font-medium mb-2">No menu items yet</p>
+              <p class="text-gray-500 text-sm mb-4">Add menu items to showcase your offerings</p>
+              <% if restaurant_owner?(@restaurant) %>
+                <%= link_to new_restaurant_menu_item_path(@restaurant), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  <span>Add Your First Menu Item</span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer -->
+  <div class="my-12"></div>
+
+  <!-- QR Code Section -->
+  <div class="mb-8">
+    <!-- QR Code Card -->
+    <div class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="px-8 py-10 md:px-12 md:py-16">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="bg-white p-3 rounded-xl">
+            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2.01M5 20h2.01M8 8h.01M8 20h.01M12 8h.01M12 20h.01M16 8h.01M16 20h.01M20 8h.01M20 20h.01"></path>
+            </svg>
+          </div>
+          <h3 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">Menu QR Code</h3>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl mb-6 md:mb-8 w-full max-w-md">
+            <% 
+              begin
+                menu_url = menu_restaurant_url(@restaurant, host: request.host_with_port, protocol: request.protocol)
+              rescue NoMethodError, NameError
+                menu_url = restaurant_url(@restaurant, host: request.host_with_port, protocol: request.protocol)
+              end
+            %>
+            <div class="flex justify-center">
+              <%= qr_code_svg(menu_url, size: 400) %>
+            </div>
+          </div>
+          <p class="text-indigo-100 text-lg md:text-xl leading-relaxed text-center mb-6 md:mb-8 max-w-2xl px-4">
+            Scan this QR code to view the menu on your phone
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg">
+            <% begin %>
+              <%= link_to menu_restaurant_path(@restaurant), class: "flex-1 bg-white text-indigo-600 hover:bg-indigo-50 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>View Menu</span>
+              <% end %>
+              <%= link_to menu_restaurant_path(@restaurant, print: true), target: '_blank', class: "flex-1 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-white/30" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                <span>Print</span>
+              <% end %>
+            <% rescue NoMethodError, NameError %>
+              <%= link_to "/restaurants/#{@restaurant.id}/menu", class: "flex-1 bg-white text-indigo-600 hover:bg-indigo-50 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>View Menu</span>
+              <% end %>
+              <%= link_to "/restaurants/#{@restaurant.id}/menu?print=true", target: '_blank', class: "flex-1 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-white/30" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                <span>Print</span>
+              <% end %>
+            <% end %>
+          </div>
+          
+          <% if restaurant_owner?(@restaurant) %>
+            <div class="w-full max-w-lg pt-6 mt-6 border-t border-white/20">
+              <p class="text-xs font-semibold text-white/80 uppercase tracking-wide mb-3 text-center">Download for Printing</p>
+              <div class="flex gap-2">
+                <% begin %>
+                  <%= link_to qr_code_png_restaurant_path(@restaurant), class: "flex-1 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm border border-white/30" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>PNG</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/qr_code_png", class: "flex-1 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm border border-white/30" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>PNG</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to qr_code_svg_restaurant_path(@restaurant), class: "flex-1 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm border border-white/30" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>SVG</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/qr_code_svg", class: "flex-1 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm border border-white/30" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>SVG</span>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer -->
+  <div class="my-12"></div>
+
+  <!-- Contact Information & Map Section -->
+  <div class="mb-8">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-8 py-6 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 p-3 rounded-xl">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Contact Information</h2>
+          </div>
+        </div>
+        <div class="p-8">
+          <div class="space-y-6">
+            <!-- Address -->
+            <div class="flex items-start gap-4">
+              <div class="bg-gray-100 p-3 rounded-lg flex-shrink-0">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Address</p>
+                <p class="text-gray-900 text-lg font-medium leading-relaxed"><%= @restaurant.address %></p>
+                <a href="https://maps.google.com/?q=<%= URI.encode_www_form_component(@restaurant.address) %>" 
+                   target="_blank" 
+                   class="inline-flex items-center gap-1 mt-2 text-indigo-600 hover:text-indigo-800 text-sm font-medium transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                  View on Google Maps
+                </a>
+              </div>
+            </div>
+
+            <!-- Phone Number -->
+            <% if @restaurant.phone_number.present? %>
+              <div class="flex items-start gap-4 pt-6 border-t border-gray-200">
+                <div class="bg-gray-100 p-3 rounded-lg flex-shrink-0">
+                  <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Phone Number</p>
+                  <a href="tel:<%= @restaurant.phone_number.gsub(/\s/, '') %>" 
+                     class="text-gray-900 text-lg font-medium hover:text-indigo-600 transition-colors">
+                    <%= @restaurant.phone_number %>
+                  </a>
+                  <p class="text-gray-500 text-sm mt-1">Click to call</p>
+                </div>
+              </div>
+            <% else %>
+              <div class="flex items-start gap-4 pt-6 border-t border-gray-200">
+                <div class="bg-gray-100 p-3 rounded-lg flex-shrink-0">
+                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Phone Number</p>
+                  <p class="text-gray-400 text-lg">Not provided</p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google Map -->
+      <div class="mt-6 p-8 pt-0">
+        <div class="w-full h-96 rounded-xl overflow-hidden border-2 border-gray-200 shadow-lg">
+          <iframe
+            width="100%"
+            height="100%"
+            frameborder="0"
+            style="border:0"
+            src="https://www.google.com/maps?q=<%= URI.encode_www_form_component(@restaurant.address) %>&output=embed"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="space-y-8 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Right Column - Statistics & Info -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-8 py-6 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="bg-indigo-600 p-3 rounded-xl">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Menu</h2>
+                <% if @restaurant.menu_items.any? %>
+                  <p class="text-gray-600 text-sm mt-1"><%= pluralize(@restaurant.menu_items.count, 'item') %> available</p>
+                <% end %>
+              </div>
+            </div>
+        <div class="flex items-center gap-3">
+          <% if has_consultant?(@restaurant) %>
+            <span class="bg-purple-100 text-purple-700 text-sm font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              Consultant Managed
+            </span>
+          <% end %>
+          <% if @restaurant.menu_items.any? %>
+            <span class="bg-indigo-100 text-indigo-700 text-sm font-semibold px-3 py-1 rounded-full">
+              <%= @restaurant.menu_items.count %>
+            </span>
+          <% end %>
+              <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_restaurant_team_index_path(@restaurant), class: "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Team</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/team", class: "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Team</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_split_tests_path(@restaurant), class: "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Split Tests</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/split_tests", class: "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Split Tests</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_recipes_path(@restaurant), class: "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span>Recipes</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/recipes", class: "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span>Recipes</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_training_modules_path(@restaurant), class: "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span>Training</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/training_modules", class: "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span>Training</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to marketplace_suppliers_path, class: "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Marketplace</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/marketplace/suppliers", class: "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Marketplace</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_compliance_reports_path(@restaurant), class: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>Compliance</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports", class: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>Compliance</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_menu_predictions_path(@restaurant), class: "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>ML Predictions</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/menu_predictions", class: "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>ML Predictions</span>
+                  <% end %>
+                <% end %>
+                <% begin %>
+                  <%= link_to restaurant_food_waste_analytics_index_path(@restaurant), class: "bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Waste Analytics</span>
+                  <% end %>
+                <% rescue NoMethodError, NameError %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/food_waste_analytics", class: "bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Waste Analytics</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to restaurant_analytics_index_path(@restaurant), class: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Analytics</span>
+                  <% end %>
+                <% rescue %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/analytics", class: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Analytics</span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <%= link_to new_restaurant_menu_item_path(@restaurant), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  <span>Add Menu Item</span>
+                <% end %>
+              <% end %>
+            <% begin %>
+              <%= link_to restaurant_dietary_feedbacks_path(@restaurant), class: "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Dietary Feedback</span>
+                <% if @restaurant.dietary_feedbacks.unresolved.any? %>
+                  <span class="bg-white text-pink-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                    <%= @restaurant.dietary_feedbacks.unresolved.count %>
+                  </span>
+                <% end %>
+              <% end %>
+            <% rescue NoMethodError, NameError %>
+              <%= link_to "/restaurants/#{@restaurant.id}/dietary_feedbacks", class: "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>Dietary Feedback</span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+        </div>
+        <div class="p-8">
+          <% if @restaurant.menu_items.any? %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <% @restaurant.menu_items.each do |item| %>
+                <div class="bg-white border-2 <%= item.has_allergens? ? 'border-red-300 hover:border-red-400' : 'border-gray-200 hover:border-indigo-300' %> rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 <%= 'ring-2 ring-indigo-100' if restaurant_owner?(@restaurant) %> relative">
+                  <!-- Allergy Warning Badge -->
+                  <% if item.has_allergens? %>
+                    <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full shadow-md flex items-center gap-1 z-10">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                      <span class="text-xs font-bold">ALLERGENS</span>
+                    </div>
+                  <% end %>
+                  
+                  <!-- Image Section -->
+                  <% if item.image.attached? %>
+                    <div class="w-full h-48 overflow-hidden bg-gray-100">
+                      <%= image_tag item.image, class: "w-full h-full object-cover hover:scale-110 transition-transform duration-300", alt: item.name %>
+                    </div>
+                  <% end %>
+                  
+                  <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                      <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-900 text-lg mb-2"><%= item.name %></h3>
+                        <% if item.description.present? %>
+                          <p class="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2"><%= item.description %></p>
+                        <% end %>
+                        <div class="mb-3">
+                          <p class="text-2xl font-bold text-indigo-600">$<%= number_with_precision(item.price, precision: 2) %></p>
+                        </div>
+                        
+                        <!-- Allergy Warning -->
+                        <% if item.has_allergens? %>
+                          <div class="mb-3 p-2 bg-red-50 border border-red-300 rounded-md">
+                            <div class="flex items-center gap-1.5 mb-1">
+                              <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                              </svg>
+                              <span class="text-xs font-bold text-red-800">Contains:</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                              <% item.allergens.each do |allergen| %>
+                                <span class="text-xs font-semibold text-red-700 bg-red-100 px-1.5 py-0.5 rounded">
+                                  <%= MenuItem.common_allergens[allergen.to_s] || allergen.humanize %>
+                                </span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                        
+                      <!-- Dietary Tags Display -->
+                      <% if item.dietary_tags.present? && item.dietary_tags.any? %>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                          <% item.dietary_tags.each do |tag| %>
+                            <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                              <%= tag.humanize %>
+                            </span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                      </div>
+                    </div>
+                    <!-- Collaboration Buttons -->
+                    <div class="mb-3 space-y-2">
+                      <!-- Team Collaboration Buttons -->
+                      <% if restaurant_team_member?(@restaurant) || restaurant_owner?(@restaurant) %>
+                        <div class="flex gap-2">
+                          <% begin %>
+                            <%= link_to restaurant_menu_item_assignments_path(@restaurant, item), class: "flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                              </svg>
+                              <span>Assign</span>
+                            <% end %>
+                            <%= link_to restaurant_menu_item_comments_path(@restaurant, item), class: "flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                              </svg>
+                              <span>Comments</span>
+                            <% end %>
+                          <% rescue NoMethodError, NameError %>
+                            <%= link_to "/restaurants/#{@restaurant.id}/menu_items/#{item.id}/menu_item_assignments", class: "flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                              </svg>
+                              <span>Assign</span>
+                            <% end %>
+                            <%= link_to "/restaurants/#{@restaurant.id}/menu_items/#{item.id}/menu_item_comments", class: "flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1 text-xs shadow-sm hover:shadow-md" do %>
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                              </svg>
+                              <span>Comments</span>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                    
+                    <!-- Edit/Delete Options (Owners Only) -->
+                    <% if restaurant_owner?(@restaurant) %>
+                      <div class="flex items-center gap-2 pt-4 border-t border-gray-200">
+                      <%= link_to edit_restaurant_menu_item_path(@restaurant, item), class: "flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <span>Edit</span>
+                      <% end %>
+                      <%= link_to restaurant_menu_item_path(@restaurant, item), 
+                                  data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete '#{item.name}'? This action cannot be undone." }, 
+                                  class: "flex-1 bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span>Delete</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-12 border-2 border-dashed border-indigo-200 text-center">
+              <svg class="w-16 h-16 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <p class="text-gray-600 text-lg font-medium mb-2">No menu items yet</p>
+              <p class="text-gray-500 text-sm mb-4">Add menu items to showcase your offerings</p>
+              <% if restaurant_owner?(@restaurant) %>
+                <%= link_to new_restaurant_menu_item_path(@restaurant), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  <span>Add Your First Menu Item</span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Statistics & Info -->
+    <div class="space-y-8">
+      <!-- Statistics Card -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900">Statistics</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">Menu Items</span>
+              <span class="text-2xl font-bold text-indigo-600"><%= @restaurant.menu_items.count %></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-600">QR Codes</span>
+              <span class="text-2xl font-bold text-indigo-600"><%= @restaurant.qr_codes.count %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurant Details Card -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-bold text-gray-900">Restaurant Details</h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Restaurant ID</p>
+            <p class="text-gray-900 font-mono text-sm">#<%= @restaurant.id %></p>
+          </div>
+          <div class="pt-4 border-t border-gray-200">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Created</p>
+            <p class="text-gray-900 text-sm"><%= @restaurant.created_at.strftime("%B %d, %Y") %></p>
+            <p class="text-gray-500 text-xs"><%= @restaurant.created_at.strftime("%I:%M %p") %></p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Last Updated</p>
+            <p class="text-gray-900 text-sm"><%= @restaurant.updated_at.strftime("%B %d, %Y") %></p>
+            <p class="text-gray-500 text-xs"><%= @restaurant.updated_at.strftime("%I:%M %p") %></p>
+          </div>
+          <% if @restaurant.user.present? %>
+            <div class="pt-4 border-t border-gray-200">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Owner</p>
+              <p class="text-gray-900 text-sm"><%= @restaurant.user.email %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <% if restaurant_owner?(@restaurant) %>
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900">Quick Actions</h3>
+          </div>
+          <div class="p-6 space-y-3">
+            <% begin %>
+              <%= link_to restaurant_dashboard_path(@restaurant), class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>View Dashboard</span>
+              <% end %>
+              <%= link_to restaurant_brands_path(@restaurant), class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                <span>Virtual Brands</span>
+              <% end %>
+              <%= link_to restaurant_promotions_path(@restaurant), class: "w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Manage Promotions</span>
+              <% end %>
+              <%= link_to restaurant_seasonal_menu_schedules_path(@restaurant), class: "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>Seasonal Menus</span>
+              <% end %>
+              <%= link_to restaurant_subscription_path(@restaurant), class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                <span>Subscription</span>
+              <% end %>
+              <% if @restaurant.menu_items.any? && @restaurant.menu_items.joins(:dietary_accuracy_reports).where(dietary_accuracy_reports: { resolved: false }).exists? %>
+                <% unresolved_reports = @restaurant.menu_items.joins(:dietary_accuracy_reports).where(dietary_accuracy_reports: { resolved: false }).count %>
+                <%= link_to "#", class: "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 relative" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                  <span>Dietary Reports</span>
+                  <% if unresolved_reports > 0 %>
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"><%= unresolved_reports %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <%= link_to edit_restaurant_path(@restaurant), class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit Restaurant</span>
+              <% end %>
+            <% rescue NoMethodError, NameError %>
+              <%= link_to "/restaurants/#{@restaurant.id}/edit", class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit Restaurant</span>
+              <% end %>
+            <% end %>
+            <%= link_to restaurant_menu_items_path(@restaurant), class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <span>Manage Menu</span>
+            <% end %>
+          <% begin %>
+            <%= link_to restaurants_path, class: "w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <span>View All Restaurants</span>
+            <% end %>
+          <% rescue NoMethodError, NameError %>
+            <%= link_to "/restaurants", class: "w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <span>View All Restaurants</span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div class="flex justify-start">
+    <% begin %>
+      <%= link_to restaurants_path, class: "group bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 border border-gray-200" do %>
+        <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to Restaurants</span>
+      <% end %>
+    <% rescue NoMethodError, NameError %>
+      <%= link_to "/restaurants", class: "group bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 border border-gray-200" do %>
+        <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to Restaurants</span>
+      <% end %>
+    <% end %>
+  </div>
+</div>

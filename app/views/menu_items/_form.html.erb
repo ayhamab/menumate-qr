@@ -1,0 +1,446 @@
+<%= form_with(model: [@restaurant, menu_item], class: "bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100") do |form| %>
+  <% if menu_item.errors.any? %>
+    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-6 mb-8 rounded-lg" role="alert">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-4 flex-1">
+          <h3 class="text-lg font-semibold text-red-800 mb-2">
+            <%= pluralize(menu_item.errors.count, "error") %> prohibited this menu item from being saved:
+          </h3>
+          <div class="text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% menu_item.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="space-y-6">
+    <!-- Name Field -->
+    <div>
+      <%= form.label :name, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Item Name <span class="text-red-500" aria-label="required">*</span>
+      <% end %>
+      <%= form.text_field :name, 
+                          required: true,
+                          id: "menu_item_name",
+                          "aria-required": "true",
+                          "aria-describedby": menu_item.errors[:name].any? ? "menu_item_name_error" : "menu_item_name_hint",
+                          "aria-invalid": menu_item.errors[:name].any? ? "true" : "false",
+                          class: "w-full px-4 py-3 border-2 #{menu_item.errors[:name].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-200 text-gray-900 placeholder-gray-400",
+                          placeholder: "e.g., Margherita Pizza" %>
+      <% if menu_item.errors[:name].any? %>
+        <p id="menu_item_name_error" class="mt-1 text-xs text-red-600 font-medium" role="alert" aria-live="polite">
+          <%= menu_item.errors[:name].first %>
+        </p>
+      <% else %>
+        <p id="menu_item_name_hint" class="mt-1 text-xs text-gray-500">The name of the menu item</p>
+      <% end %>
+    </div>
+
+    <!-- Description Field -->
+    <div>
+      <%= form.label :description, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Description
+      <% end %>
+      <%= form.text_area :description, 
+                         rows: 4,
+                         class: "w-full px-4 py-3 border-2 #{menu_item.errors[:description].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400 resize-none",
+                         placeholder: "Describe the item, ingredients, preparation style, etc." %>
+      <% if menu_item.errors[:description].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= menu_item.errors[:description].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Optional description of the menu item</p>
+      <% end %>
+    </div>
+
+    <!-- Translations Section -->
+    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200" data-controller="collapsible">
+      <button type="button" 
+              data-action="click->collapsible#toggle"
+              class="flex items-center justify-between w-full mb-4">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+          </svg>
+          <h3 class="text-lg font-bold text-gray-900">Translations (Optional)</h3>
+          <span class="text-xs text-gray-500 bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">For tourist areas</span>
+        </div>
+        <svg class="w-5 h-5 text-gray-600 transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <p class="text-sm text-gray-600 mb-4">Add translations to make your menu accessible to international customers.</p>
+      
+      <div class="space-y-4" data-collapsible-target="content" style="display: none;">
+        <% MenuItem.supported_languages.except('en').each do |code, name| %>
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-sm font-semibold text-gray-700"><%= name %> (<%= code.upcase %>)</span>
+            </div>
+            
+            <div class="space-y-3">
+              <div>
+                <%= form.label "name_translations_#{code}", "Name in #{name}", class: "block text-xs font-medium text-gray-600 mb-1" %>
+                <%= form.text_field "name_translations[#{code}]", 
+                    value: menu_item.name_translations&.dig(code.to_s) || menu_item.name_translations&.dig(code.to_sym),
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm",
+                    placeholder: "Enter #{name} name" %>
+              </div>
+              
+              <div>
+                <%= form.label "description_translations_#{code}", "Description in #{name}", class: "block text-xs font-medium text-gray-600 mb-1" %>
+                <%= form.text_area "description_translations[#{code}]",
+                    value: menu_item.description_translations&.dig(code.to_s) || menu_item.description_translations&.dig(code.to_sym),
+                    rows: 2,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm resize-none",
+                    placeholder: "Enter #{name} description (optional)" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Brand Field (for virtual restaurants) -->
+    <% if @restaurant.brands.any? %>
+      <div>
+        <%= form.label :brand_id, "Virtual Brand (optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.select :brand_id,
+                        options_from_collection_for_select([OpenStruct.new(id: nil, name: 'Main Restaurant (No Brand)')] + @restaurant.brands.active.ordered, :id, :name, menu_item.brand_id),
+                        {},
+                        { class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900" } %>
+        <p class="text-xs text-gray-500 mt-1">Assign to a virtual brand, or leave as main restaurant menu</p>
+      </div>
+    <% end %>
+
+    <!-- Category Field -->
+    <div>
+      <%= form.label :category, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Category
+      <% end %>
+      <%= form.select :category,
+                      options_for_select([
+                        ['', ''],
+                        ['Appetizers', 'Appetizers'],
+                        ['Main Courses', 'Main Courses'],
+                        ['Desserts', 'Desserts'],
+                        ['Beverages', 'Beverages'],
+                        ['Sides', 'Sides'],
+                        ['Salads', 'Salads'],
+                        ['Soups', 'Soups'],
+                        ['Specials', 'Specials'],
+                        ['Breakfast', 'Breakfast'],
+                        ['Lunch', 'Lunch'],
+                        ['Dinner', 'Dinner'],
+                        ['Snacks', 'Snacks'],
+                        ['Other', 'Other']
+                      ], menu_item.category),
+                      {},
+                      { class: "w-full px-4 py-3 border-2 #{menu_item.errors[:category].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900" } %>
+      <% if menu_item.errors[:category].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= menu_item.errors[:category].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Select a category to organize your menu items</p>
+      <% end %>
+    </div>
+
+    <!-- Image Field -->
+    <div>
+      <%= form.label :image, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Item Image
+      <% end %>
+      <div class="space-y-4">
+        <!-- Current Image Preview -->
+        <% if menu_item.image.attached? %>
+          <div class="relative">
+            <%= image_tag menu_item.image, class: "w-full h-64 object-cover rounded-xl border-2 border-gray-300", id: "current_image_preview" %>
+            <div class="mt-2 text-sm text-gray-600">
+              <p>Current image: <%= menu_item.image.filename.to_s %></p>
+              <label class="inline-flex items-center mt-2 cursor-pointer">
+                <%= form.check_box :remove_image, { class: "mr-2" }, "1", "0" %>
+                <span class="text-sm text-gray-700">Remove current image</span>
+              </label>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Image Upload -->
+        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-indigo-400 transition-colors duration-200">
+          <%= form.file_field :image, 
+                              accept: "image/png,image/jpeg,image/jpg,image/gif,image/webp",
+                              class: "hidden",
+                              id: "menu_item_image_input",
+                              onchange: "previewImage(this)" %>
+          <label for="menu_item_image_input" class="cursor-pointer">
+            <div class="text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="mt-4">
+                <span class="text-indigo-600 font-medium">Click to upload</span>
+                <span class="text-gray-600"> or drag and drop</span>
+              </div>
+              <p class="mt-2 text-xs text-gray-500">PNG, JPG, GIF or WEBP (MAX. 5MB)</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- New Image Preview -->
+        <div id="image_preview_container" class="hidden">
+          <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+          <div class="relative">
+            <%= image_tag "", id: "image_preview", class: "w-full h-64 object-cover rounded-xl border-2 border-gray-300" %>
+            <button type="button" onclick="clearImagePreview()" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <% if menu_item.errors[:image].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= menu_item.errors[:image].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Optional image of the menu item (recommended for better presentation)</p>
+      <% end %>
+    </div>
+
+    <!-- Price Field -->
+    <div>
+      <%= form.label :price, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+        Price <span class="text-red-500">*</span>
+      <% end %>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="text-gray-500 text-lg font-medium">$</span>
+        </div>
+        <%= form.number_field :price, 
+                              step: 0.01,
+                              min: 0,
+                              required: true,
+                              class: "w-full pl-8 pr-4 py-3 border-2 #{menu_item.errors[:price].any? ? 'border-red-500' : 'border-gray-300'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400",
+                              placeholder: "0.00" %>
+      </div>
+      <% if menu_item.errors[:price].any? %>
+        <p class="mt-1 text-xs text-red-600 font-medium">
+          <%= menu_item.errors[:price].first %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-xs text-gray-500">Price in dollars (must be 0 or greater)</p>
+      <% end %>
+    </div>
+
+    <!-- Allergens Field - Prominent Warning -->
+    <div class="bg-red-50 border-2 border-red-300 rounded-xl p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <%= form.label :allergens, class: "block text-sm font-bold text-red-800" do %>
+          Contains Allergens ⚠️
+        <% end %>
+      </div>
+      <p class="text-xs text-red-700 mb-4 font-medium">IMPORTANT: Select all allergens present in this item. This information is critical for customer safety.</p>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <% MenuItem.common_allergens.each do |key, label| %>
+          <label class="flex items-center gap-2 p-3 bg-white border-2 border-red-200 rounded-lg hover:border-red-400 hover:bg-red-50 cursor-pointer transition-all duration-200">
+            <%= form.check_box :allergens, { multiple: true, checked: menu_item.allergens&.include?(key.to_s) }, key.to_s, nil %>
+            <span class="text-sm font-semibold text-gray-900"><%= label %></span>
+          </label>
+        <% end %>
+      </div>
+      <p class="text-xs text-red-600 mt-3 font-medium">⚠️ Customers with allergies rely on this information. Please be accurate.</p>
+    </div>
+
+    <!-- Dietary Tags Field -->
+    <div>
+      <%= form.label :dietary_tags, class: "block text-sm font-semibold text-gray-700 mb-3" do %>
+        Dietary Tags
+      <% end %>
+      <p class="text-xs text-gray-500 mb-4">Select all that apply to help customers find suitable options</p>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <% 
+          dietary_options = [
+            { value: 'vegetarian', label: 'Vegetarian', icon: '🥬' },
+            { value: 'vegan', label: 'Vegan', icon: '🌱' },
+            { value: 'gluten-free', label: 'Gluten-Free', icon: '🌾' },
+            { value: 'dairy-free', label: 'Dairy-Free', icon: '🥛' },
+            { value: 'nut-free', label: 'Nut-Free', icon: '🥜' },
+            { value: 'halal', label: 'Halal', icon: '☪️' },
+            { value: 'kosher', label: 'Kosher', icon: '✡️' },
+            { value: 'low-carb', label: 'Low-Carb', icon: '🍞' },
+            { value: 'keto', label: 'Keto', icon: '🥑' },
+            { value: 'paleo', label: 'Paleo', icon: '🦴' },
+            { value: 'organic', label: 'Organic', icon: '🌿' },
+            { value: 'spicy', label: 'Spicy', icon: '🌶️' }
+          ]
+          selected_tags = menu_item.dietary_tags || []
+        %>
+        <% dietary_options.each do |option| %>
+          <label class="flex items-center p-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 hover:border-indigo-400 transition-all duration-200 <%= 'bg-indigo-50 border-indigo-500' if selected_tags.include?(option[:value]) %>">
+            <%= check_box_tag "menu_item[dietary_tags][]", 
+                             option[:value], 
+                             selected_tags.include?(option[:value]),
+                             id: "menu_item_dietary_tags_#{option[:value]}",
+                             class: "sr-only peer" %>
+            <div class="flex items-center gap-2 flex-1">
+              <span class="text-xl"><%= option[:icon] %></span>
+              <span class="text-sm font-medium text-gray-700 peer-checked:text-indigo-700"><%= option[:label] %></span>
+            </div>
+            <svg class="w-5 h-5 text-indigo-600 opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </label>
+        <% end %>
+      </div>
+      
+      <!-- Custom dietary tag input -->
+      <div class="mt-4">
+        <label class="block text-xs font-semibold text-gray-600 mb-2">Add Custom Tag (optional)</label>
+        <div class="flex gap-2">
+          <input type="text" 
+                 id="custom_dietary_tag" 
+                 placeholder="e.g., sugar-free, low-sodium"
+                 class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-900 placeholder-gray-400">
+          <button type="button" 
+                  id="add_custom_tag"
+                  class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-all duration-200">
+            Add
+          </button>
+        </div>
+        <p class="mt-1 text-xs text-gray-500">Type a custom dietary tag and click Add</p>
+      </div>
+      
+      <div id="custom_tags_display" class="mt-3 flex flex-wrap gap-2">
+        <% selected_tags.reject { |tag| dietary_options.map { |o| o[:value] }.include?(tag) }.each do |custom_tag| %>
+          <span class="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">
+            <%= custom_tag %>
+            <button type="button" 
+                    class="remove-custom-tag ml-1 text-indigo-500 hover:text-indigo-700"
+                    data-tag="<%= custom_tag %>">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <input type="hidden" name="menu_item[dietary_tags][]" value="<%= custom_tag %>">
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-6 border-t-2 border-gray-200 mt-8">
+      <%= link_to "Cancel", restaurant_path(@restaurant), class: "w-full sm:w-auto px-8 py-3 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-semibold transition-all duration-200 text-center" %>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <% unless menu_item.new_record? %>
+          <%= button_to ai_analysis_restaurant_menu_item_path(restaurant, menu_item), 
+                      method: :post,
+                      class: "px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2",
+                      data: { turbo_frame: "_top" },
+                      form: { style: "display: inline;" } do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+            <span>AI Analysis</span>
+          <% end %>
+        <% end %>
+        <%= form.submit menu_item.new_record? ? "Create Menu Item" : "Update Menu Item", class: "w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('image_preview');
+        const container = document.getElementById('image_preview_container');
+        preview.src = e.target.result;
+        container.classList.remove('hidden');
+        
+        // Hide current image if exists
+        const currentPreview = document.getElementById('current_image_preview');
+        if (currentPreview) {
+          currentPreview.closest('.relative').style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function clearImagePreview() {
+    const input = document.getElementById('menu_item_image_input');
+    const preview = document.getElementById('image_preview');
+    const container = document.getElementById('image_preview_container');
+    input.value = '';
+    preview.src = '';
+    container.classList.add('hidden');
+    
+    // Show current image again if exists
+    const currentPreview = document.getElementById('current_image_preview');
+    if (currentPreview) {
+      currentPreview.closest('.relative').style.display = 'block';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const customTagInput = document.getElementById('custom_dietary_tag');
+    const addCustomTagBtn = document.getElementById('add_custom_tag');
+    const customTagsDisplay = document.getElementById('custom_tags_display');
+    
+    // Add custom tag
+    addCustomTagBtn.addEventListener('click', function() {
+      const tagValue = customTagInput.value.trim().toLowerCase();
+      if (tagValue && !document.querySelector(`input[value="${tagValue}"]`)) {
+        const tagSpan = document.createElement('span');
+        tagSpan.className = 'inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full';
+        tagSpan.innerHTML = `
+          ${tagValue}
+          <button type="button" class="remove-custom-tag ml-1 text-indigo-500 hover:text-indigo-700" data-tag="${tagValue}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          <input type="hidden" name="menu_item[dietary_tags][]" value="${tagValue}">
+        `;
+        customTagsDisplay.appendChild(tagSpan);
+        customTagInput.value = '';
+      }
+    });
+    
+    // Allow Enter key to add tag
+    customTagInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addCustomTagBtn.click();
+      }
+    });
+    
+    // Remove custom tag
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.remove-custom-tag')) {
+        e.target.closest('span').remove();
+      }
+    });
+  });
+</script>
+

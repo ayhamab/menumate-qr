@@ -1,0 +1,8 @@
+<%= turbo_stream.update "rating-section-#{@menu_item.id}", partial: "ratings/rating_section", locals: { menu_item: @menu_item } %>
+
+<% if @rating.errors.any? %>
+  <%= turbo_stream.update "rating-errors-#{@menu_item.id}", partial: "ratings/errors", locals: { rating: @rating } %>
+<% else %>
+  <%= turbo_stream.remove "rating-errors-#{@menu_item.id}" if @rating.errors.empty? %>
+<% end %>
+

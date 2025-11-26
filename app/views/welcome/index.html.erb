@@ -1,0 +1,543 @@
+<% content_for :title, "MenuMate QR - Digital Menus for Restaurants" %>
+
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white py-20 md:py-28 relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center">
+        <div class="inline-block mb-6">
+          <span class="bg-white/20 backdrop-blur-sm text-white text-sm font-semibold px-4 py-2 rounded-full border border-white/30">
+            🚀 Trusted by 10,000+ Restaurants Worldwide
+          </span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 animate-fade-in leading-tight">
+          Digital Menus That<br/>
+          <span class="bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">Drive More Sales</span>
+        </h1>
+        <p class="text-xl md:text-2xl mb-4 text-indigo-100 max-w-3xl mx-auto">
+          Create beautiful QR code menus in minutes. No coding required. Update your menu in real-time and boost customer engagement.
+        </p>
+        <p class="text-lg mb-8 text-indigo-200 max-w-2xl mx-auto">
+          Join thousands of restaurants using MenuMate QR to modernize their menu experience and increase revenue.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <% begin %>
+            <%= link_to onboarding_welcome_path, class: "bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 text-lg" do %>
+              Start Free Trial →
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding", class: "bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 text-lg" do %>
+              Start Free Trial →
+            <% end %>
+          <% end %>
+          <% begin %>
+            <%= link_to restaurants_path, class: "bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-4 px-8 rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-200 text-lg border-2 border-white/20" do %>
+              View Examples
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants", class: "bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-4 px-8 rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-200 text-lg border-2 border-white/20" do %>
+              View Examples
+            <% end %>
+          <% end %>
+        </div>
+        <p class="text-sm text-indigo-200">
+          ✓ Free to start • ✓ No credit card required • ✓ Setup in 5 minutes
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Everything You Need to Modernize Your Menu
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Powerful features designed to help restaurants succeed in the digital age
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-indigo-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">QR Code Menus</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Generate beautiful QR codes instantly. Customers scan and view your menu on their phones - no app download required.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Real-Time Updates</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Change prices, add items, or update descriptions instantly. Your menu updates automatically for all customers.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="bg-gradient-to-br from-pink-50 to-red-50 rounded-2xl p-8 border border-pink-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-pink-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Menu Analytics</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Track QR scans, popular items, and customer engagement. Make data-driven decisions to boost sales.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 border border-blue-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-blue-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Dietary Tags & Filters</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Help customers find what they need with dietary tags, allergen information, and smart filtering options.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-green-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Cost-Effective</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Save money on printing costs. Update your menu anytime without reprinting. Start free with no credit card required.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-100 hover:shadow-xl transition-all duration-200">
+          <div class="bg-amber-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Quick Setup</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Get started in under 5 minutes. Our guided setup wizard makes it easy to create your first menu.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          How It Works
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Get your digital menu up and running in just 3 simple steps
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="bg-indigo-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
+            1
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Sign Up Free</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Create your account in seconds. No credit card required. Start with our free plan.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
+            2
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Add Your Menu</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Use our simple interface to add menu items, prices, descriptions, and dietary information.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="bg-pink-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-bold">
+            3
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">Print & Share</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Download your QR code, print it, and place it on tables. Customers scan and view your menu instantly.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Trusted by Restaurants Everywhere
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Join thousands of restaurants already using MenuMate QR
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-400">
+              <% 5.times do %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-gray-700 mb-4 italic">
+            "MenuMate QR transformed our restaurant. Setup was incredibly easy, and our customers love the contactless menu experience. We've seen a 30% increase in customer engagement!"
+          </p>
+          <p class="text-gray-900 font-semibold">— Sarah Johnson, Owner</p>
+          <p class="text-gray-600 text-sm">The Garden Bistro</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-400">
+              <% 5.times do %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-gray-700 mb-4 italic">
+            "The analytics feature is a game-changer. We can see which items are popular and adjust our menu accordingly. Best investment we've made this year."
+          </p>
+          <p class="text-gray-900 font-semibold">— Michael Chen, Manager</p>
+          <p class="text-gray-600 text-sm">Pizza Palace</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-400">
+              <% 5.times do %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-gray-700 mb-4 italic">
+            "Updating our menu used to be a nightmare. Now we can change prices and add specials in seconds. Our staff loves it, and so do our customers!"
+          </p>
+          <p class="text-gray-900 font-semibold">— Emily Rodriguez, Chef</p>
+          <p class="text-gray-600 text-sm">Coastal Kitchen</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">10,000+</div>
+          <div class="text-gray-600">Restaurants</div>
+        </div>
+        <div>
+          <div class="text-4xl md:text-5xl font-bold text-purple-600 mb-2">50M+</div>
+          <div class="text-gray-600">QR Scans</div>
+        </div>
+        <div>
+          <div class="text-4xl md:text-5xl font-bold text-pink-600 mb-2">98%</div>
+          <div class="text-gray-600">Satisfaction</div>
+        </div>
+        <div>
+          <div class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">5 min</div>
+          <div class="text-gray-600">Setup Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-green-100 text-green-700 px-6 py-3 rounded-full text-sm font-semibold mb-4">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h7m-7 0a2 2 0 00-2 2v6m0 0v5m0-5h7m-7 0h-2"></path>
+          </svg>
+          <span>2 Months Free Trial - No Credit Card Required</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Simple, Transparent Pricing
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Start with 2 months free, then choose the plan that fits your needs. Cancel anytime.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <!-- Basic Plan -->
+        <div class="bg-white rounded-2xl p-8 border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Basic</h3>
+            <div class="text-4xl font-extrabold text-gray-900 mb-2">40€<span class="text-lg text-gray-600">/month</span></div>
+            <p class="text-gray-600 text-sm">After 2-month free trial</p>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">1 Restaurant</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Unlimited Menu Items</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">QR Code Generation</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Basic Analytics</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Email Support</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Dietary Tags & Filters</span>
+            </li>
+          </ul>
+          <% begin %>
+            <%= link_to onboarding_welcome_path, class: "w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block" do %>
+              Start Free Trial
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding", class: "w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block" do %>
+              Start Free Trial
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-8 border-2 border-indigo-500 shadow-2xl transform scale-105 relative">
+          <div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-4 py-1 rounded-bl-xl rounded-tr-2xl">
+            MOST POPULAR
+          </div>
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
+            <div class="text-4xl font-extrabold text-white mb-2">60€<span class="text-lg text-indigo-200">/month</span></div>
+            <p class="text-indigo-100 text-sm">After 2-month free trial</p>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white font-semibold">Everything in Basic</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Up to 5 Restaurants</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Advanced Analytics & Reports</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Team Collaboration</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Custom Branding</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Split Testing (A/B Tests)</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-white">Priority Support</span>
+            </li>
+          </ul>
+          <% begin %>
+            <%= link_to onboarding_welcome_path, class: "w-full bg-white hover:bg-gray-100 text-indigo-600 font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg" do %>
+              Start Free Trial
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding", class: "w-full bg-white hover:bg-gray-100 text-indigo-600 font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg" do %>
+              Start Free Trial
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Advanced Plan -->
+        <div class="bg-white rounded-2xl p-8 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-all duration-200">
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Advanced</h3>
+            <div class="text-4xl font-extrabold text-purple-600 mb-2">90€<span class="text-lg text-gray-600">/month</span></div>
+            <p class="text-gray-600 text-sm">After 2-month free trial</p>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700 font-semibold">Everything in Pro</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Unlimited Restaurants</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Franchise Management</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">API Access</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">ML Menu Predictions</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Compliance Management</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-gray-700">Dedicated Support</span>
+            </li>
+          </ul>
+          <% begin %>
+            <%= link_to onboarding_welcome_path, class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg" do %>
+              Start Free Trial
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding", class: "w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 text-center block shadow-lg" do %>
+              Start Free Trial
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <p class="text-sm text-gray-600 mb-4">
+          <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          Cancel anytime • No long-term commitment • Upgrade or downgrade anytime
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        Ready to Modernize Your Menu?
+      </h2>
+      <p class="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
+        Join thousands of restaurants already using MenuMate QR to boost customer engagement and increase sales.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <% begin %>
+          <%= link_to onboarding_welcome_path, class: "bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 text-lg" do %>
+            Start Free Trial →
+          <% end %>
+        <% rescue %>
+          <%= link_to "/onboarding", class: "bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-200 text-lg" do %>
+            Start Free Trial →
+          <% end %>
+        <% end %>
+        <% begin %>
+          <%= link_to restaurants_path, class: "bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-4 px-8 rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-200 text-lg border-2 border-white/20" do %>
+            View Examples
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants", class: "bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-4 px-8 rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-200 text-lg border-2 border-white/20" do %>
+            View Examples
+          <% end %>
+        <% end %>
+      </div>
+      <p class="text-sm text-indigo-200 mt-6">
+        ✓ No credit card required • ✓ Setup in 5 minutes • ✓ Cancel anytime
+      </p>
+    </div>
+  </section>
+</div>
+
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 1s ease-out;
+  }
+</style>

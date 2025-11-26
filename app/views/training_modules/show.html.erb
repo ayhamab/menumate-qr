@@ -1,0 +1,195 @@
+<% content_for :title, "#{@training_module.title} - Training" %>
+
+<div class="training-module-show-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @training_module.title %></h1>
+        <p class="text-gray-600 text-lg capitalize"><%= @training_module.module_type.humanize %></p>
+        <% if @training_module.required? %>
+          <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full mt-2">Required Training</span>
+        <% end %>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_training_modules_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/training_modules", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% if @training_session.nil? && respond_to?(:current_user) && current_user %>
+          <% begin %>
+            <%= form_with url: restaurant_training_module_training_sessions_path(@restaurant, @training_module), method: :post, local: true, class: "inline" do |f| %>
+              <%= f.submit "Start Training", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_sessions", method: :post, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" do %>
+              Start Training
+            <% end %>
+          <% end %>
+        <% elsif @training_session&.in_progress? %>
+          <% begin %>
+            <%= link_to restaurant_training_module_training_session_path(@restaurant, @training_module, @training_session), class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>Continue Training</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_sessions/#{@training_session.id}", class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              Continue Training
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Info -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <p class="text-sm font-semibold text-gray-600 mb-1">Questions</p>
+        <p class="text-2xl font-bold text-gray-900"><%= @training_module.training_questions.count %></p>
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-gray-600 mb-1">Estimated Duration</p>
+        <p class="text-2xl font-bold text-gray-900">~<%= @training_module.estimated_duration %> min</p>
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-gray-600 mb-1">Passing Score</p>
+        <p class="text-2xl font-bold text-gray-900"><%= @training_module.passing_score %>%</p>
+      </div>
+    </div>
+
+    <% if @training_module.description.present? %>
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-3">Description</h2>
+        <p class="text-gray-700 whitespace-pre-wrap"><%= @training_module.description %></p>
+      </div>
+    <% end %>
+
+    <% if @training_module.content.present? %>
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-3">Training Content</h2>
+        <div class="prose max-w-none bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <div class="text-gray-700 whitespace-pre-wrap"><%= @training_module.content %></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @training_module.learning_objectives.present? %>
+      <div>
+        <h2 class="text-xl font-bold text-gray-900 mb-3">Learning Objectives</h2>
+        <div class="bg-indigo-50 rounded-xl p-6 border border-indigo-200">
+          <div class="text-gray-700 whitespace-pre-wrap"><%= @training_module.learning_objectives %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Questions Preview (Admin Only) -->
+  <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Questions</h2>
+        <% begin %>
+          <%= link_to new_restaurant_training_module_training_question_path(@restaurant, @training_module), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Add Question</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_questions/new", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Add Question</span>
+          <% end %>
+        <% end %>
+      </div>
+      
+      <% if @training_questions.any? %>
+        <div class="space-y-4">
+          <% @training_questions.each_with_index do |question, index| %>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-indigo-100 text-indigo-700 text-sm font-bold px-3 py-1 rounded-full">Question <%= index + 1 %></span>
+                    <span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full capitalize"><%= question.question_type.humanize %></span>
+                  </div>
+                  <p class="text-gray-900 font-semibold mb-2"><%= question.question_text %></p>
+                  <% if question.options.present? %>
+                    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 ml-4">
+                      <% question.options.each_with_index do |option, opt_index| %>
+                        <li class="<%= 'font-bold text-green-700' if opt_index.to_s == question.correct_option.to_s %>">
+                          <%= option %>
+                          <% if opt_index.to_s == question.correct_option.to_s %>
+                            <span class="text-green-600 ml-2">✓ Correct</span>
+                          <% end %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  <% end %>
+                </div>
+                <div class="flex gap-2">
+                  <% begin %>
+                    <%= link_to edit_restaurant_training_module_training_question_path(@restaurant, @training_module, question), class: "text-indigo-600 hover:text-indigo-800" do %>
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    <% end %>
+                  <% rescue %>
+                    <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_questions/#{question.id}/edit", class: "text-indigo-600 hover:text-indigo-800" do %>
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+              <% if question.explanation.present? %>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+                  <p class="text-xs font-semibold text-blue-800 mb-1">Explanation:</p>
+                  <p class="text-sm text-blue-700"><%= question.explanation %></p>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-200">
+          <p class="text-gray-600 mb-4">No questions added yet. Add questions to make this training interactive.</p>
+          <% begin %>
+            <%= link_to new_restaurant_training_module_training_question_path(@restaurant, @training_module), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>Add First Question</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_questions/new", class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>Add First Question</span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,199 @@
+<% content_for :title, "Dashboard - #{@restaurant.name}" %>
+
+<div class="dashboard">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        <p class="text-gray-600 text-lg"><%= @restaurant.name %></p>
+      </div>
+      <%= link_to restaurant_path(@restaurant), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200" do %>
+        View Restaurant
+      <% end %>
+    </div>
+  </div>
+
+  <!-- QR Scan Analytics -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">QR Code Scans</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Scans</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2"><%= @analytics[:total_scans] %></p>
+          </div>
+          <div class="bg-indigo-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Today</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2"><%= @analytics[:scans_today] %></p>
+          </div>
+          <div class="bg-green-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">This Week</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2"><%= @analytics[:scans_this_week] %></p>
+          </div>
+          <div class="bg-blue-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">This Month</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2"><%= @analytics[:scans_this_month] %></p>
+          </div>
+          <div class="bg-purple-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Growth Metrics -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Week-over-Week Growth</h3>
+      <div class="flex items-center gap-4">
+        <div>
+          <p class="text-sm text-gray-600">Last Week</p>
+          <p class="text-2xl font-bold text-gray-900"><%= @analytics[:scan_growth][:last_week] %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">This Week</p>
+          <p class="text-2xl font-bold text-gray-900"><%= @analytics[:scan_growth][:this_week] %></p>
+        </div>
+        <div class="ml-auto">
+          <p class="text-sm text-gray-600">Growth</p>
+          <p class="text-2xl font-bold <%= @analytics[:scan_growth][:growth_percentage] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+            <%= @analytics[:scan_growth][:growth_percentage] >= 0 ? '+' : '' %><%= @analytics[:scan_growth][:growth_percentage] %>%
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Performance -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Menu Performance</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-sm font-medium text-gray-600">Total Menu Items</p>
+        <p class="text-3xl font-bold text-gray-900 mt-2"><%= @analytics[:total_menu_items] %></p>
+      </div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-sm font-medium text-gray-600">Average Price</p>
+        <p class="text-3xl font-bold text-gray-900 mt-2">$<%= number_with_precision(@analytics[:average_price], precision: 2) %></p>
+      </div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-sm font-medium text-gray-600">Total Menu Value</p>
+        <p class="text-3xl font-bold text-gray-900 mt-2">$<%= number_with_precision(@analytics[:menu_value], precision: 2) %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popular Items -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Menu Items</h2>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dietary Tags</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @analytics[:popular_items].each do |item| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= item[:name] %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">$<%= number_with_precision(item[:price], precision: 2) %></div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-gray-500"><%= truncate(item[:description] || 'No description', length: 50) %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500"><%= item[:dietary_tags] || '-' %></div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <% if @analytics[:popular_items].empty? %>
+        <div class="p-6 text-center text-gray-500">
+          <p>No menu items yet. <%= link_to "Add your first menu item", restaurant_menu_items_path(@restaurant), class: "text-indigo-600 hover:text-indigo-800" %> to get started.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Recent QR Scans</h2>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scanned At</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Agent</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @analytics[:recent_activity].each do |activity| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900"><%= activity[:scanned_at].strftime("%B %d, %Y at %I:%M %p") %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500"><%= activity[:ip_address] || 'N/A' %></div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-gray-500"><%= activity[:user_agent] || 'N/A' %></div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <% if @analytics[:recent_activity].empty? %>
+        <div class="p-6 text-center text-gray-500">
+          <p>No QR scans yet. Share your QR code to start tracking scans!</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

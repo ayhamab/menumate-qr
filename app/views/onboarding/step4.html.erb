@@ -1,0 +1,103 @@
+<% content_for :title, "Step 4: Complete - MenuMate QR" %>
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Progress Bar -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-700">Step 4 of 4</span>
+        <span class="text-sm text-gray-500">100% Complete</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full" style="width: 100%"></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-10 text-center">
+      <div class="mb-8">
+        <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full mb-6">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">You're All Set! 🎉</h1>
+        <p class="text-xl text-gray-600 mb-8">
+          Your restaurant is ready. Generate your QR code and start sharing!
+        </p>
+      </div>
+
+      <!-- QR Code -->
+      <div class="bg-gray-50 rounded-xl p-8 mb-8 inline-block">
+        <% begin %>
+          <% menu_url = menu_restaurant_url(@restaurant, host: request.host_with_port, protocol: request.protocol) %>
+        <% rescue %>
+          <% menu_url = restaurant_url(@restaurant, host: request.host_with_port, protocol: request.protocol) %>
+        <% end %>
+        
+        <% if defined?(qr_code_svg) %>
+          <%= qr_code_svg(menu_url, size: 200) %>
+        <% else %>
+          <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500 text-sm">QR Code</p>
+          </div>
+        <% end %>
+        
+        <p class="text-sm text-gray-600 mt-4">Scan to view menu</p>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="bg-indigo-50 rounded-xl p-6 mb-8 text-left">
+        <h3 class="font-bold text-gray-900 mb-4">Next Steps:</h3>
+        <ul class="space-y-3 text-gray-700">
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-indigo-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Download and print your QR code</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-indigo-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Place it on tables or at your entrance</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-indigo-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Add more menu items anytime</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-indigo-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Update your menu in real-time</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <% begin %>
+          <%= link_to onboarding_complete_path(@restaurant), method: :post, class: "flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+            Go to Restaurant Dashboard →
+          <% end %>
+        <% rescue %>
+          <%= link_to restaurant_path(@restaurant), class: "flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+            Go to Restaurant Dashboard →
+          <% end %>
+        <% end %>
+        <% begin %>
+          <%= link_to qr_code_png_restaurant_path(@restaurant), download: true, class: "flex-1 bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold py-4 px-8 rounded-xl transition-all duration-200 text-lg" do %>
+            Download QR Code
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/qr_code_png", download: true, class: "flex-1 bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold py-4 px-8 rounded-xl transition-all duration-200 text-lg" do %>
+            Download QR Code
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+

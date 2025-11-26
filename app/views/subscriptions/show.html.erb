@@ -1,0 +1,198 @@
+<% content_for :title, "Subscription - #{@restaurant.name} - MenuMate QR" %>
+
+<div class="subscription-page">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <%= link_to restaurant_path(@restaurant), class: "text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900">Subscription Management</h1>
+        <p class="text-gray-600 mt-1"><%= @restaurant.name %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Subscription Status -->
+  <% if @subscription&.stripe_subscription_id.present? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 <%= @subscription.active? ? 'border-green-300' : 'border-red-300' %>">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Current Subscription</h2>
+          <div class="flex items-center gap-3">
+            <span class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-4 py-2 rounded-lg">
+              <%= @subscription.plan_details[:name] %> Plan
+            </span>
+            <span class="bg-<%= @subscription.active? ? 'green' : 'red' %>-100 text-<%= @subscription.active? ? 'green' : 'red' %>-700 font-semibold px-3 py-1 rounded-full text-sm">
+              <%= @subscription.status.humanize %>
+            </span>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-3xl font-bold text-gray-900">$<%= number_with_precision(@subscription.plan_price, precision: 2) %></p>
+          <p class="text-sm text-gray-600">per month</p>
+        </div>
+      </div>
+
+      <% if @subscription.current_period_end.present? %>
+        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm text-gray-600 mb-1">
+            <% if @subscription.cancel_at_period_end? %>
+              <span class="text-red-600 font-semibold">Canceling:</span> Subscription will end on
+            <% else %>
+              <span class="text-green-600 font-semibold">Renews:</span> Next billing date is
+            <% end %>
+            <span class="font-bold text-gray-900"><%= @subscription.current_period_end.strftime("%B %d, %Y") %></span>
+          </p>
+        </div>
+      <% end %>
+
+      <div class="flex gap-3">
+        <% unless @subscription.cancel_at_period_end? %>
+          <%= button_to cancel_restaurant_subscription_path(@restaurant), 
+                      method: :post,
+                      data: { turbo_confirm: "Are you sure you want to cancel your subscription? It will remain active until the end of the billing period." },
+                      class: "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" do %>
+            Cancel Subscription
+          <% end %>
+        <% else %>
+          <%= button_to reactivate_restaurant_subscription_path(@restaurant),
+                      method: :post,
+                      class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" do %>
+            Reactivate Subscription
+          <% end %>
+        <% end %>
+        
+        <%= link_to "Update Plan", restaurant_subscription_path(@restaurant, anchor: "plans"), 
+                    class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl shadow-xl p-8 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold text-yellow-800">No Active Subscription</h2>
+      </div>
+      <p class="text-yellow-700 mb-4">You're currently on the free tier. Upgrade to unlock premium features and remove limitations.</p>
+    </div>
+  <% end %>
+
+  <!-- Pricing Plans -->
+  <div id="plans" class="mb-8">
+    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Choose Your Plan</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @plans.each do |plan_name, plan| %>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 <%= @subscription&.plan_name == plan_name ? 'border-indigo-500 ring-4 ring-indigo-200' : 'border-gray-200' %> hover:shadow-2xl transition-all duration-200">
+          <!-- Plan Header -->
+          <div class="bg-gradient-to-r <%= plan_name == 'basic' ? 'from-gray-500 to-gray-600' : plan_name == 'pro' ? 'from-indigo-500 to-purple-600' : 'from-purple-600 to-pink-600' %> px-6 py-8 text-center">
+            <h3 class="text-2xl font-bold text-white mb-2"><%= plan[:name] %></h3>
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-4xl font-extrabold text-white">$<%= number_with_precision(plan[:price], precision: 2) %></span>
+              <span class="text-white/80 text-lg">/month</span>
+            </div>
+          </div>
+
+          <!-- Plan Features -->
+          <div class="p-6">
+            <ul class="space-y-3 mb-6">
+              <% plan[:features].each do |feature| %>
+                <li class="flex items-start gap-2">
+                  <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span class="text-gray-700"><%= feature %></span>
+                </li>
+              <% end %>
+            </ul>
+
+            <!-- Action Button -->
+            <% if @subscription&.plan_name == plan_name && @subscription.active? %>
+              <button disabled class="w-full bg-gray-300 text-gray-600 font-semibold py-3 px-6 rounded-lg cursor-not-allowed">
+                Current Plan
+              </button>
+            <% elsif @subscription&.stripe_subscription_id.present? %>
+              <%= form_with url: restaurant_subscription_path(@restaurant), method: :patch, local: true, class: "w-full" do |f| %>
+                <%= f.hidden_field :plan_name, value: plan_name %>
+                <%= f.submit "Switch to #{plan[:name]}", 
+                            data: { turbo_confirm: "Are you sure you want to switch to the #{plan[:name]} plan? You'll be charged the prorated amount." },
+                            class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200" %>
+              <% end %>
+            <% else %>
+              <%= form_with url: checkout_restaurant_subscription_path(@restaurant), method: :post, local: true, class: "w-full" do |f| %>
+                <%= f.hidden_field :plan_name, value: plan_name %>
+                <%= f.submit "Subscribe to #{plan[:name]}", 
+                            class: "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200" %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Feature Comparison -->
+  <div class="bg-white rounded-2xl shadow-xl p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Feature Comparison</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b-2 border-gray-200">
+            <th class="text-left py-3 px-4 font-semibold text-gray-700">Feature</th>
+            <th class="text-center py-3 px-4 font-semibold text-gray-700">Basic</th>
+            <th class="text-center py-3 px-4 font-semibold text-gray-700">Pro</th>
+            <th class="text-center py-3 px-4 font-semibold text-gray-700">Enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Menu Items</td>
+            <td class="py-3 px-4 text-center">Up to 50</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Locations</td>
+            <td class="py-3 px-4 text-center">1</td>
+            <td class="py-3 px-4 text-center">5</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Promotions</td>
+            <td class="py-3 px-4 text-center">5</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Languages</td>
+            <td class="py-3 px-4 text-center">2</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Unlimited</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Analytics</td>
+            <td class="py-3 px-4 text-center">Basic</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Advanced</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Advanced</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 px-4 text-gray-700">Support</td>
+            <td class="py-3 px-4 text-center">Email</td>
+            <td class="py-3 px-4 text-center">Priority</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">Dedicated Manager</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 text-gray-700">API Access</td>
+            <td class="py-3 px-4 text-center">—</td>
+            <td class="py-3 px-4 text-center">—</td>
+            <td class="py-3 px-4 text-center text-green-600 font-semibold">✓</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

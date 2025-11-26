@@ -1,0 +1,191 @@
+<% content_for :title, "#{@menu_item.name} - Analytics" %>
+
+<div class="menu-item-analytics-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @menu_item.name %></h1>
+        <p class="text-gray-600 text-lg">Analytics & Waste Risk Analysis</p>
+      </div>
+      <% begin %>
+        <%= link_to restaurant_food_waste_analytics_index_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Analytics</span>
+        <% end %>
+      <% rescue %>
+        <%= link_to "/restaurants/#{@restaurant.id}/food_waste_analytics", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back to Analytics</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Statistics Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Views</span>
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= number_with_delimiter(@item_stats[:total_views]) %></p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Clicks</span>
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= number_with_delimiter(@item_stats[:total_clicks]) %></p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Orders</span>
+        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= number_with_delimiter(@item_stats[:total_orders]) %></p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Revenue</span>
+        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900">$<%= number_with_precision(@item_stats[:total_revenue], precision: 2) %></p>
+    </div>
+  </div>
+
+  <!-- Trends -->
+  <% if @trends.any? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Trends</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-600 mb-1">Views Trend</p>
+          <div class="flex items-center gap-2">
+            <% trend_icon = @trends[:views_trend] == 'increasing' ? '↑' : @trends[:views_trend] == 'decreasing' ? '↓' : '→' %>
+            <% trend_color = @trends[:views_trend] == 'increasing' ? 'text-green-600' : @trends[:views_trend] == 'decreasing' ? 'text-red-600' : 'text-gray-600' %>
+            <span class="text-2xl <%= trend_color %>"><%= trend_icon %></span>
+            <span class="font-bold text-gray-900 capitalize"><%= @trends[:views_trend] %></span>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-600 mb-1">Clicks Trend</p>
+          <div class="flex items-center gap-2">
+            <% trend_icon = @trends[:clicks_trend] == 'increasing' ? '↑' : @trends[:clicks_trend] == 'decreasing' ? '↓' : '→' %>
+            <% trend_color = @trends[:clicks_trend] == 'increasing' ? 'text-green-600' : @trends[:clicks_trend] == 'decreasing' ? 'text-red-600' : 'text-gray-600' %>
+            <span class="text-2xl <%= trend_color %>"><%= trend_icon %></span>
+            <span class="font-bold text-gray-900 capitalize"><%= @trends[:clicks_trend] %></span>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-600 mb-1">Orders Trend</p>
+          <div class="flex items-center gap-2">
+            <% trend_icon = @trends[:orders_trend] == 'increasing' ? '↑' : @trends[:orders_trend] == 'decreasing' ? '↓' : '→' %>
+            <% trend_color = @trends[:orders_trend] == 'increasing' ? 'text-green-600' : @trends[:orders_trend] == 'decreasing' ? 'text-red-600' : 'text-gray-600' %>
+            <span class="text-2xl <%= trend_color %>"><%= trend_icon %></span>
+            <span class="font-bold text-gray-900 capitalize"><%= @trends[:orders_trend] %></span>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-gray-600 mb-1">Revenue Trend</p>
+          <div class="flex items-center gap-2">
+            <% trend_icon = @trends[:revenue_trend] == 'increasing' ? '↑' : @trends[:revenue_trend] == 'decreasing' ? '↓' : '→' %>
+            <% trend_color = @trends[:revenue_trend] == 'increasing' ? 'text-green-600' : @trends[:revenue_trend] == 'decreasing' ? 'text-red-600' : 'text-gray-600' %>
+            <span class="text-2xl <%= trend_color %>"><%= trend_icon %></span>
+            <span class="font-bold text-gray-900 capitalize"><%= @trends[:revenue_trend] %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Daily Analytics Chart -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Daily Performance (Last <%= @period_days %> Days)</h2>
+    <% if @daily_analytics.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Date</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Views</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Clicks</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Orders</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Revenue</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Conversion</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @daily_analytics.each do |analytics| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900"><%= analytics.date.strftime("%B %d, %Y") %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= number_with_delimiter(analytics.views || 0) %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= number_with_delimiter(analytics.clicks || 0) %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= number_with_delimiter(analytics.orders || 0) %></td>
+                <td class="px-4 py-3 text-sm text-gray-700">$<%= number_with_precision(analytics.revenue || 0, precision: 2) %></td>
+                <td class="px-4 py-3 text-sm text-indigo-600 font-semibold"><%= analytics.conversion_rate %>%</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-200">
+        <p class="text-gray-600">No analytics data available for this period.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Last Viewed Info -->
+  <% if @item_stats[:last_viewed] %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mt-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Last Activity</h2>
+      <div class="flex items-center gap-4">
+        <div class="bg-indigo-100 rounded-full p-4">
+          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Last viewed on</p>
+          <p class="text-lg font-bold text-gray-900"><%= @item_stats[:last_viewed].strftime("%B %d, %Y") %></p>
+          <p class="text-sm text-gray-500"><%= @item_stats[:days_since_view] %> days ago</p>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-red-50 border-2 border-red-200 rounded-2xl shadow-xl p-8 mt-8">
+      <div class="flex items-center gap-4">
+        <div class="bg-red-100 rounded-full p-4">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-lg font-bold text-red-800">No Activity Detected</p>
+          <p class="text-sm text-red-700">This item has not been viewed in the last <%= @period_days %> days.</p>
+          <p class="text-sm text-red-600 mt-2">Consider removing from menu or adding to promotions.</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+

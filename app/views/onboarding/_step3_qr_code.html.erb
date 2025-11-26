@@ -1,0 +1,67 @@
+<div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+  <div class="mb-8 text-center">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Your QR Code is Ready!</h1>
+    <p class="text-gray-600">Download and display your QR code for customers to scan</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <!-- QR Code Display -->
+    <div class="bg-gray-50 rounded-xl p-8 flex flex-col items-center">
+      <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+        <% require 'rqrcode' %>
+        <% qr = RQRCode::QRCode.new(menu_url) %>
+        <% svg = qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 6, standalone: true) %>
+        <div class="w-64 h-64">
+          <%= raw svg %>
+        </div>
+      </div>
+      <div class="text-center">
+        <p class="text-sm font-semibold text-gray-700 mb-2">Menu URL</p>
+        <p class="text-xs text-gray-500 break-all"><%= menu_url %></p>
+      </div>
+    </div>
+
+    <!-- Download Options -->
+    <div class="space-y-4">
+      <div class="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-indigo-900 mb-4">Download Options</h3>
+        <div class="space-y-3">
+          <%= link_to qr_code_png_restaurant_path(restaurant), 
+                      class: "w-full bg-white hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-700 font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span>Download PNG</span>
+          <% end %>
+          <%= link_to qr_code_svg_restaurant_path(restaurant), 
+                      class: "w-full bg-white hover:bg-indigo-100 border-2 border-indigo-300 text-indigo-700 font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span>Download SVG</span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
+        <h3 class="text-sm font-semibold text-blue-900 mb-2">💡 Tips</h3>
+        <ul class="text-sm text-blue-800 space-y-1">
+          <li>• Print and place QR codes on tables</li>
+          <li>• Display at the entrance or host stand</li>
+          <li>• Include in takeout bags</li>
+          <li>• Share on social media</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between pt-6 border-t border-gray-200 mt-8">
+    <%= link_to onboarding_step_path(step: step - 1), class: "bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all duration-200" do %>
+      ← Back
+    <% end %>
+    <%= form_with url: update_onboarding_step_path(step: step), method: :patch, local: true do |f| %>
+      <%= f.submit "Continue →", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" %>
+    <% end %>
+  </div>
+</div>
+

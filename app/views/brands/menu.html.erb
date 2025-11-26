@@ -1,0 +1,91 @@
+<% content_for :title, "#{@brand.name} Menu - #{@restaurant.name}" %>
+
+<div class="brand-menu" style="<%= @brand.brand_color.present? ? "--brand-color: #{@brand.brand_color};" : '' %>">
+  <!-- Brand Header -->
+  <div class="bg-gradient-to-br <%= @brand.brand_color.present? ? '' : 'from-indigo-600 via-purple-600 to-pink-500' %> rounded-2xl shadow-2xl overflow-hidden mb-8" style="<%= @brand.brand_color.present? ? "background: linear-gradient(135deg, #{@brand.brand_color} 0%, #{@brand.brand_color}dd 100%);" : '' %>">
+    <div class="px-8 py-10 md:px-12 md:py-16">
+      <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-4">
+            <% if @brand.logo_url.present? %>
+              <img src="<%= @brand.logo_url %>" alt="<%= @brand.name %>" class="h-16 w-auto">
+            <% end %>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+              <%= @brand.name %>
+            </h1>
+          </div>
+          <% if @brand.description.present? %>
+            <p class="text-white/90 text-lg md:text-xl leading-relaxed max-w-2xl mb-4">
+              <%= @brand.description %>
+            </p>
+          <% end %>
+          <div class="flex flex-wrap items-center gap-4 text-white/80 text-sm">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span><%= @restaurant.address %></span>
+            </div>
+            <% if @restaurant.phone_number.present? %>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                <span><%= @restaurant.phone_number %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language Toggle -->
+  <% if @available_languages.length > 1 %>
+    <div class="mb-6 flex justify-center">
+      <div class="bg-white rounded-xl shadow-lg p-2 inline-flex gap-2">
+        <% @available_languages.each do |lang| %>
+          <%= link_to menu_brand_path(@brand, lang: lang), 
+                      class: "px-4 py-2 rounded-lg font-semibold transition-all duration-200 #{@current_language == lang ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
+            <%= MenuItem.supported_languages[lang.to_sym] || lang.upcase %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Menu Items by Category -->
+  <% if @menu_items.any? %>
+    <div class="space-y-12" data-controller="menu-filter">
+      <% @menu_items_by_category.each do |category, items| %>
+        <div class="category-section">
+          <!-- Category Header -->
+          <div class="mb-6">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
+              <%= category.present? ? category : (@current_language == 'en' ? 'Menu Items' : 'Menu Items') %>
+            </h2>
+            <div class="h-1 w-24 rounded-full" style="<%= @brand.brand_color.present? ? "background: linear-gradient(to right, #{@brand.brand_color}, #{@brand.brand_color}88);" : 'background: linear-gradient(to right, #6366f1, #8b5cf6, #ec4899);' %>"></div>
+          </div>
+
+          <!-- Items Grid -->
+          <div id="public_menu_items_<%= category.present? ? category.parameterize : 'uncategorized' %>" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <% items.each do |item| %>
+              <%= render partial: "restaurants/menu_item_public_card", locals: { menu_item: item, current_language: @current_language, restaurant: @restaurant } %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+      <svg class="w-20 h-20 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">Menu Coming Soon</h3>
+      <p class="text-gray-600">This brand's menu is being prepared. Please check back soon!</p>
+    </div>
+  <% end %>
+</div>
+

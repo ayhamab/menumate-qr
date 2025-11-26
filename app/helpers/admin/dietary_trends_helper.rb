@@ -1,0 +1,2 @@
+module Admin::DietaryTrendsHelper
+end

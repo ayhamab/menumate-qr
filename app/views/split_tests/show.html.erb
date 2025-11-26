@@ -1,0 +1,207 @@
+<% content_for :title, "#{@split_test.name} - Split Test" %>
+
+<div class="split-test-show-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @split_test.name %></h1>
+        <p class="text-gray-600 text-lg capitalize"><%= @split_test.test_type %> test</p>
+        <% if @split_test.menu_item.present? %>
+          <p class="text-sm text-gray-500 mt-1">Menu Item: <%= @split_test.menu_item.name %></p>
+        <% end %>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_split_tests_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/split_tests", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% if @split_test.draft? %>
+          <%= form_with url: start_restaurant_split_test_path(@restaurant, @split_test), method: :post, local: true, class: "inline" do |f| %>
+            <%= f.submit "Start Test", class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+          <% end %>
+        <% elsif @split_test.active? %>
+          <%= form_with url: pause_restaurant_split_test_path(@restaurant, @split_test), method: :post, local: true, class: "inline" do |f| %>
+            <%= f.submit "Pause Test", class: "bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Impressions</span>
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= number_with_delimiter(@statistics[:total_impressions]) %></p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Total Clicks</span>
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= number_with_delimiter(@statistics[:total_clicks]) %></p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Conversion Rate</span>
+        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-indigo-600"><%= @statistics[:overall_conversion_rate] %>%</p>
+    </div>
+    
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Status</span>
+        <% status_icon = case @split_test.status
+          when 'active'
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+          when 'completed'
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+          else
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+        end %>
+        <svg class="w-5 h-5 <%= @split_test.active? ? 'text-green-600' : @split_test.completed? ? 'text-blue-600' : 'text-gray-600' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <%= status_icon.html_safe %>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900 capitalize"><%= @split_test.status %></p>
+    </div>
+  </div>
+
+  <!-- Variants Comparison -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Variants</h2>
+      <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+        <% begin %>
+          <%= link_to new_restaurant_split_test_split_test_variant_path(@restaurant, @split_test), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Add Variant</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/split_tests/#{@split_test.id}/split_test_variants/new", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Add Variant</span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+    
+    <div class="space-y-6">
+      <% @variants.each do |variant| %>
+        <% stats = variant.statistics %>
+        <div class="bg-gray-50 rounded-xl p-6 border-2 <%= variant.is_winner? ? 'border-green-500 bg-green-50' : 'border-gray-200' %>">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-gray-900"><%= variant.name %></h3>
+                <% if variant.is_control? %>
+                  <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">Control</span>
+                <% end %>
+                <% if variant.is_winner? %>
+                  <span class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full">Winner</span>
+                <% end %>
+              </div>
+              <p class="text-sm text-gray-600 mb-2">Traffic: <%= variant.traffic_percentage %>%</p>
+              <% case @split_test.test_type %>
+              <% when 'description' %>
+                <p class="text-gray-700 text-sm bg-white p-3 rounded-lg border border-gray-200"><%= variant.description %></p>
+              <% when 'price' %>
+                <p class="text-gray-700 text-sm font-semibold">Price: $<%= number_with_precision(variant.price, precision: 2) %></p>
+              <% when 'placement' %>
+                <p class="text-gray-700 text-sm font-semibold">Position: <%= variant.position %></p>
+              <% end %>
+            </div>
+            <div class="text-right">
+              <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <% begin %>
+                  <%= link_to edit_restaurant_split_test_split_test_variant_path(@restaurant, @split_test, variant), class: "text-indigo-600 hover:text-indigo-800" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  <% end %>
+                <% rescue %>
+                  <%= link_to "/restaurants/#{@restaurant.id}/split_tests/#{@split_test.id}/split_test_variants/#{variant.id}/edit", class: "text-indigo-600 hover:text-indigo-800" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Impressions</p>
+              <p class="text-lg font-bold text-gray-900"><%= number_with_delimiter(stats[:impressions]) %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Clicks</p>
+              <p class="text-lg font-bold text-gray-900"><%= number_with_delimiter(stats[:clicks]) %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Conversion</p>
+              <p class="text-lg font-bold text-indigo-600"><%= stats[:conversion_rate] %>%</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Orders</p>
+              <p class="text-lg font-bold text-green-600"><%= number_with_delimiter(stats[:orders]) %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Complete Test Form -->
+  <% if @split_test.active? && (can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant)) %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Complete Test</h2>
+      <%= form_with url: complete_restaurant_split_test_path(@restaurant, @split_test), method: :post, local: true, class: "space-y-4" do |f| %>
+        <div>
+          <%= f.label :winner_variant_id, "Select Winner", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+          <%= f.collection_select :winner_variant_id,
+                                  @variants,
+                                  :id,
+                                  :name,
+                                  { prompt: "Select winning variant..." },
+                                  { required: true, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= f.check_box :apply_winner, { checked: @split_test.auto_apply_winner? }, true, false %>
+          <%= f.label :apply_winner, "Automatically apply winner to menu item", class: "text-sm font-semibold text-gray-700" %>
+        </div>
+        <%= f.submit "Complete Test", class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

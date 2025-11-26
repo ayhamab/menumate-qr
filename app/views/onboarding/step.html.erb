@@ -1,0 +1,50 @@
+<% content_for :title, "Onboarding - Step #{@step} of #{@total_steps}" %>
+
+<div class="onboarding-wizard" data-controller="onboarding">
+  <!-- Progress Bar -->
+  <div class="mb-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-4">
+        <% (1..@total_steps).each do |step_num| %>
+          <div class="flex items-center flex-1">
+            <div class="flex items-center justify-center w-10 h-10 rounded-full <%= step_num <= @step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500' %> font-bold transition-all duration-200">
+              <%= step_num %>
+            </div>
+            <% unless step_num == @total_steps %>
+              <div class="flex-1 h-1 mx-2 <%= step_num < @step ? 'bg-indigo-600' : 'bg-gray-200' %> transition-all duration-200"></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class="text-center">
+        <h2 class="text-lg font-semibold text-gray-900">
+          <%= step_title(@step) %>
+        </h2>
+        <p class="text-sm text-gray-600 mt-1">
+          Step <%= @step %> of <%= @total_steps %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step Content -->
+  <div class="max-w-3xl mx-auto">
+    <% case @step %>
+    <% when 1 %>
+      <!-- Step 1: Restaurant Information -->
+      <%= render 'onboarding/step1_restaurant_info', restaurant: @restaurant, step: @step %>
+    <% when 2 %>
+      <!-- Step 2: Menu Items -->
+      <%= render 'onboarding/step2_menu_items', restaurant: @restaurant, step: @step, menu_items: @menu_items, sample_items: @sample_items %>
+    <% when 3 %>
+      <!-- Step 3: QR Code -->
+      <%= render 'onboarding/step3_qr_code', restaurant: @restaurant, step: @step, menu_url: @menu_url %>
+    <% when 4 %>
+      <!-- Step 4: Subscription -->
+      <%= render 'onboarding/step4_subscription', restaurant: @restaurant, step: @step, subscription_plans: @subscription_plans %>
+    <% when 5 %>
+      <!-- Step 5: Completion -->
+      <%= render 'onboarding/step5_complete', restaurant: @restaurant, step: @step %>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,351 @@
+<article id="menu_item_<%= menu_item.id %>" 
+     class="menu-item-card group bg-gradient-to-br from-white to-amber-50/30 rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 <%= menu_item.has_allergens? ? 'border-red-300/50 hover:border-red-400' : 'border-amber-200/50 hover:border-amber-300' %> transform hover:-translate-y-2 hover:scale-[1.01] relative focus-within:ring-4 focus-within:ring-amber-400 focus-within:ring-offset-4"
+     data-menu-filter-target="item"
+     data-tags="<%= (menu_item.dietary_tags || []).to_json %>"
+     data-menu-item-id="<%= menu_item.id %>"
+     data-restaurant-id="<%= restaurant.id %>"
+     role="article"
+     aria-labelledby="menu_item_<%= menu_item.id %>_title"
+     tabindex="0"
+     data-controller="menu-item-tracking"
+     data-menu-item-tracking-menu-item-id-value="<%= menu_item.id %>"
+     data-menu-item-tracking-restaurant-id-value="<%= restaurant.id %>"
+     data-action="click->menu-item-tracking#click">
+  <!-- Decorative gradient accent -->
+  <div class="absolute top-0 left-0 right-0 h-2 <%= menu_item.has_allergens? ? 'bg-gradient-to-r from-red-500 via-orange-500 to-red-600' : 'bg-gradient-to-r from-amber-500 via-orange-400 to-amber-600' %>"></div>
+  
+  <!-- Shine effect on hover -->
+  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none"></div>
+  
+  <!-- Location Badge -->
+  <% if menu_item.location.present? && defined?(@selected_location) && menu_item.location != @selected_location %>
+    <div class="absolute top-2 right-2 z-10 bg-blue-600 text-white px-2 py-1 rounded-full shadow-lg text-xs font-bold flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+      <%= menu_item.location.name %>
+    </div>
+  <% elsif menu_item.location.present? && defined?(@selected_location) && menu_item.location == @selected_location %>
+    <div class="absolute top-2 right-2 z-10 bg-green-600 text-white px-2 py-1 rounded-full shadow-lg text-xs font-bold flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      This Location
+    </div>
+  <% end %>
+  
+  <!-- Compliance Badges -->
+  <% if defined?(@restaurant) && @restaurant.regions.active.any? %>
+    <% 
+      # Check compliance for current region if available
+      current_region = @restaurant.regions.active.first
+      if current_region
+        mandatory_laws = current_region.mandatory_laws
+        compliant_laws = menu_item.menu_item_compliances
+                                  .where(region: current_region, status: 'compliant')
+                                  .where(dietary_law: mandatory_laws)
+                                  .count
+        total_laws = mandatory_laws.count
+        is_compliant = total_laws > 0 && compliant_laws == total_laws
+      end
+    %>
+    <% if defined?(is_compliant) && is_compliant %>
+      <div class="absolute bottom-2 right-2 z-10 bg-emerald-600 text-white px-2 py-1 rounded-full shadow-lg text-xs font-bold flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+        </svg>
+        Compliant
+      </div>
+    <% elsif defined?(is_compliant) && !is_compliant && total_laws > 0 %>
+      <div class="absolute bottom-2 right-2 z-10 bg-red-600 text-white px-2 py-1 rounded-full shadow-lg text-xs font-bold flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        Non-Compliant
+      </div>
+    <% end %>
+  <% end %>
+  
+  <!-- ML Prediction Badge -->
+  <% if defined?(@restaurant) && @restaurant.menu_predictions.any? %>
+    <% 
+      success_pred = menu_item.menu_predictions.where(prediction_type: 'success_score').recent.first
+      if success_pred && success_pred.predicted_value >= 0.7 && success_pred.high_confidence?
+    %>
+      <div class="absolute bottom-2 left-2 z-10 bg-violet-600 text-white px-2 py-1 rounded-full shadow-lg text-xs font-bold flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        High Success Potential
+      </div>
+    <% end %>
+  <% end %>
+  
+  <!-- Promotion Badge -->
+  <% active_promotion = @active_promotions&.find { |p| p.applies_to_item?(menu_item) } || menu_item.promotions.active.current.first %>
+  <% if active_promotion %>
+    <div class="absolute top-2 left-2 z-10 bg-gradient-to-r <%= active_promotion.badge_color == 'red' ? 'from-red-500 to-red-600' : active_promotion.badge_color == 'orange' ? 'from-orange-500 to-orange-600' : active_promotion.badge_color == 'yellow' ? 'from-yellow-500 to-yellow-600' : active_promotion.badge_color == 'green' ? 'from-green-500 to-green-600' : active_promotion.badge_color == 'blue' ? 'from-blue-500 to-blue-600' : active_promotion.badge_color == 'purple' ? 'from-purple-500 to-purple-600' : 'from-pink-500 to-pink-600' %> text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span class="text-xs font-bold"><%= active_promotion.discount_display %></span>
+    </div>
+  <% end %>
+  
+  <!-- Allergy Warning Banner -->
+  <% if menu_item.has_allergens? %>
+    <div class="absolute top-2 right-2 z-10 bg-red-600 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-pulse">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+      <span class="text-xs font-bold">CONTAINS ALLERGENS</span>
+    </div>
+  <% end %>
+  
+  <!-- Image Section with Beautiful Placeholder -->
+  <div class="menu-item-image w-full overflow-hidden relative <%= menu_item.image.attached? ? 'bg-amber-100' : 'bg-gradient-to-br from-amber-100 via-orange-50 to-amber-50' %>" role="img" aria-label="<%= menu_item.name_in(@current_language || 'en') %>">
+    <% if menu_item.image.attached? %>
+      <%= image_tag menu_item.image, 
+                    class: "w-full h-full object-cover transition-transform duration-700", 
+                    alt: "#{menu_item.name_in(@current_language || 'en')} - #{menu_item.description_in(@current_language || 'en').presence || 'Menu item image'}" %>
+    <% else %>
+      <!-- Beautiful Placeholder with Icon -->
+      <div class="w-full h-full flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-amber-200/40 via-orange-100/40 to-amber-100/40"></div>
+        <div class="relative z-10 flex flex-col items-center justify-center p-6">
+          <div class="bg-white/90 backdrop-blur-sm rounded-full p-8 mb-4 shadow-2xl border-2 border-amber-200/50">
+            <svg class="w-20 h-20 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div class="text-center">
+            <p class="text-base font-bold text-amber-700 uppercase tracking-wide" style="font-family: 'Playfair Display', serif;">Delicious</p>
+          </div>
+        </div>
+        <!-- Decorative circles -->
+        <div class="absolute top-4 right-4 w-24 h-24 bg-amber-200/30 rounded-full blur-2xl"></div>
+        <div class="absolute bottom-4 left-4 w-20 h-20 bg-orange-200/40 rounded-full blur-xl"></div>
+      </div>
+    <% end %>
+    <!-- Overlay gradient on hover (desktop only) -->
+    <div class="absolute inset-0 bg-gradient-to-t from-amber-900/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 desktop-hover-overlay"></div>
+  </div>
+  
+  <div class="menu-item-content bg-gradient-to-br from-white to-amber-50/20">
+    <!-- Item Header -->
+    <div class="mb-4 sm:mb-5">
+      <h3 id="menu_item_<%= menu_item.id %>_title" class="item-title font-black text-amber-900 mb-2 sm:mb-3 group-hover:text-amber-700 transition-all duration-300 leading-tight tracking-tight" style="font-family: 'Playfair Display', serif;">
+        <%= menu_item.name_in(@current_language || 'en') %>
+      </h3>
+      <% 
+        # Check for active split test
+        active_test = @active_split_tests&.dig(menu_item.id)
+        variant = nil
+        if active_test && active_test.test_type == 'description'
+          variant = get_variant_for_test(active_test)
+          track_impression(active_test, variant, request) if variant
+        end
+        
+        # Use variant description if available, otherwise use menu item description
+        description = variant&.description || menu_item.description_in(@current_language || 'en')
+      %>
+      <% if description.present? %>
+        <p class="text-amber-800/80 text-sm sm:text-base leading-relaxed line-clamp-2 sm:line-clamp-3 font-light italic" 
+           data-split-test-id="<%= active_test&.id %>"
+           data-variant-id="<%= variant&.id %>"
+           style="font-family: 'Cormorant Garamond', serif;"><%= description %></p>
+      <% end %>
+    </div>
+
+    <!-- Nutrition Badge -->
+    <% if menu_item.has_nutrition_info? %>
+      <div class="mb-3 flex items-center gap-2">
+        <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span class="text-xs font-bold"><%= menu_item.calories %> cal</span>
+        </div>
+        <% if menu_item.protein.present? || menu_item.carbs.present? || menu_item.fat.present? %>
+          <div class="text-xs text-gray-600">
+            <% macros = [] %>
+            <% macros << "#{menu_item.protein.round(0)}g P" if menu_item.protein.present? %>
+            <% macros << "#{menu_item.carbs.round(0)}g C" if menu_item.carbs.present? %>
+            <% macros << "#{menu_item.fat.round(0)}g F" if menu_item.fat.present? %>
+            <%= macros.join(' • ') %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Price Section -->
+    <div class="mb-5 pb-5 border-b-2 border-gradient-to-r from-gray-100 to-gray-200">
+      <% 
+        # Check for price split test
+        price_test = @active_split_tests&.dig(menu_item.id)
+        price_variant = nil
+        if price_test && price_test.test_type == 'price'
+          price_variant = get_variant_for_test(price_test)
+          track_impression(price_test, price_variant, request) if price_variant
+        end
+        
+        # Use variant price if available, otherwise use menu item price
+        display_price = price_variant&.price || menu_item.price
+        active_promotion = @active_promotions&.find { |p| p.applies_to_item?(menu_item) } || menu_item.promotions.active.current.first
+      %>
+      <% if active_promotion && active_promotion.discount_type != 'special' %>
+        <% discounted_price = active_promotion.calculate_discounted_price(display_price) %>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="flex items-baseline gap-1">
+            <span class="text-base sm:text-lg font-semibold text-gray-500" aria-hidden="true">$</span>
+            <p class="item-price font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+               data-split-test-id="<%= price_test&.id %>"
+               data-variant-id="<%= price_variant&.id %>">
+              <span class="sr-only">Price: $</span><%= number_with_precision(discounted_price, precision: 2) %>
+            </p>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm text-gray-400 line-through" aria-label="Original price: $<%= number_with_precision(display_price, precision: 2) %>">
+              <span aria-hidden="true">$</span><%= number_with_precision(display_price, precision: 2) %>
+            </span>
+            <span class="text-xs font-bold text-green-600"><%= active_promotion.discount_display %></span>
+          </div>
+        </div>
+      <% else %>
+        <div class="flex items-baseline gap-1.5 sm:gap-2">
+          <span class="text-xl sm:text-2xl font-bold text-amber-700">$</span>
+          <p class="item-price font-black text-amber-900 drop-shadow-sm"
+             data-split-test-id="<%= price_test&.id %>"
+             data-variant-id="<%= price_variant&.id %>"
+             style="font-family: 'Playfair Display', serif;">
+            <%= number_with_precision(display_price, precision: 2) %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Allergy Warning -->
+    <% if menu_item.has_allergens? %>
+      <div class="mb-4 p-3 bg-red-50 border-2 border-red-300 rounded-lg">
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <span class="text-sm font-bold text-red-800">Contains Allergens:</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <% menu_item.allergens.each do |allergen| %>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-600 text-white border-2 border-red-700 shadow-sm">
+              <%= MenuItem.common_allergens[allergen.to_s] || allergen.humanize %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Cross-Contamination Warning -->
+    <% 
+      # Get other menu items from the same restaurant
+      other_items = @menu_items_by_category.values.flatten.reject { |item| item.id == menu_item.id }
+      cross_contamination_warnings = menu_item.cross_contamination_warnings(other_items) rescue []
+    %>
+    <% if cross_contamination_warnings.any? %>
+      <div class="mb-4 p-3 bg-orange-50 border-2 border-orange-400 rounded-lg">
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-5 h-5 text-orange-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <span class="text-sm font-bold text-orange-800">⚠️ Cross-Contamination Risk</span>
+        </div>
+        <p class="text-xs text-orange-700 mb-2">This item may come into contact with allergens from other menu items due to shared ingredients or preparation areas.</p>
+        <details class="text-xs">
+          <summary class="text-orange-800 font-semibold cursor-pointer hover:text-orange-900">View Details</summary>
+          <div class="mt-2 space-y-2">
+            <% cross_contamination_warnings.first(3).each do |warning| %>
+              <div class="bg-white rounded p-2 border border-orange-300">
+                <p class="font-semibold text-gray-900 mb-1"><%= warning[:menu_item].name %></p>
+                <ul class="list-disc list-inside text-orange-800 space-y-1">
+                  <% warning[:risks].each do |risk| %>
+                    <li><%= risk[:message] %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+        </details>
+      </div>
+    <% end %>
+
+    <!-- Dietary Tags with Icons -->
+    <% if menu_item.dietary_tags.present? && menu_item.dietary_tags.any? %>
+      <div class="pt-3" role="group" aria-label="Dietary tags">
+        <div class="flex flex-wrap gap-2" role="list">
+          <% 
+            tag_config = {
+              'vegan' => { color: 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-400 shadow-lg', icon: '🌱' },
+              'vegetarian' => { color: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white border-green-400 shadow-lg', icon: '🥬' },
+              'gluten-free' => { color: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-400 shadow-lg', icon: '🌾' },
+              'dairy-free' => { color: 'bg-gradient-to-r from-amber-400 to-yellow-500 text-white border-amber-300 shadow-lg', icon: '🥛' },
+              'nut-free' => { color: 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-400 shadow-lg', icon: '🥜' },
+              'halal' => { color: 'bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-500 shadow-lg', icon: '☪️' },
+              'kosher' => { color: 'bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-500 shadow-lg', icon: '✡️' },
+              'low-carb' => { color: 'bg-gradient-to-r from-orange-400 to-amber-500 text-white border-orange-300 shadow-lg', icon: '🥑' },
+              'keto' => { color: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-400 shadow-lg', icon: '🥩' },
+              'paleo' => { color: 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-amber-400 shadow-lg', icon: '🦴' },
+              'organic' => { color: 'bg-gradient-to-r from-emerald-500 to-green-500 text-white border-emerald-400 shadow-lg', icon: '🌿' },
+              'spicy' => { color: 'bg-gradient-to-r from-red-500 to-orange-500 text-white border-red-400 shadow-lg', icon: '🌶️' }
+            }
+          %>
+          <% menu_item.dietary_tags.each do |tag| %>
+            <% 
+              config = tag_config[tag.downcase] || { color: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-400 shadow-lg', icon: '✓' }
+            %>
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold border-2 <%= config[:color] %> shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-110" role="listitem">
+              <span class="text-sm sm:text-base"><%= config[:icon] %></span>
+              <span><%= tag.humanize %></span>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Rating Section -->
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <%= render partial: "ratings/rating_section", locals: { menu_item: menu_item, restaurant: restaurant } %>
+    </div>
+
+    <!-- Dietary Accuracy Report Section -->
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <%= render partial: "dietary_accuracy_reports/report_section", locals: { menu_item: menu_item, restaurant: restaurant } %>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-semibold text-gray-700">Dietary Information Feedback</h4>
+      </div>
+      <p class="text-xs text-gray-600 mb-3">
+        Found an issue with dietary tags or allergen information? Help us improve!
+      </p>
+      <% begin %>
+        <%= link_to new_restaurant_dietary_feedback_path(restaurant, menu_item_id: menu_item.id, type: 'incorrect_tag'), 
+                    class: "inline-flex items-center gap-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          <span>Report Issue</span>
+        <% end %>
+      <% rescue %>
+        <%= link_to "/restaurants/#{restaurant.id}/dietary_feedbacks/new?menu_item_id=#{menu_item.id}&type=incorrect_tag", 
+                    class: "inline-flex items-center gap-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          <span>Report Issue</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

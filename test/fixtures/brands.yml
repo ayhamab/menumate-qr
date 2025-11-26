@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  restaurant: one
+  name: MyString
+  description: MyText
+  logo_url: MyString
+  brand_color: MyString
+  active: false
+  display_order: 1
+
+two:
+  restaurant: two
+  name: MyString
+  description: MyText
+  logo_url: MyString
+  brand_color: MyString
+  active: false
+  display_order: 1

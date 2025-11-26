@@ -1,0 +1,153 @@
+<% content_for :title, "Report Dietary Issue - #{@menu_item.name}" %>
+
+<div class="feedback-form-page max-w-2xl mx-auto px-4 py-8">
+  <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Report Dietary Issue</h1>
+      <p class="text-gray-600">Help us improve the accuracy of dietary information for this menu item.</p>
+    </div>
+
+    <!-- Menu Item Info -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+      <div class="flex items-start gap-4">
+        <% if @menu_item.image.attached? %>
+          <%= image_tag @menu_item.image, class: "w-20 h-20 rounded-lg object-cover", alt: @menu_item.name %>
+        <% end %>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-gray-900 mb-1"><%= @menu_item.name %></h3>
+          <p class="text-sm text-gray-600 mb-2"><%= @menu_item.description&.truncate(100) %></p>
+          <% if @menu_item.dietary_tags.present? %>
+            <div class="flex flex-wrap gap-1.5">
+              <% @menu_item.dietary_tags.each do |tag| %>
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2 py-1 rounded-full">
+                  <%= tag.humanize %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with model: [@restaurant, @feedback], local: true, class: "space-y-6" do |f| %>
+      <% if @feedback.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+          <h3 class="text-sm font-semibold text-red-800 mb-2">
+            <%= pluralize(@feedback.errors.count, "error") %> prohibited this feedback from being saved:
+          </h3>
+          <ul class="text-sm text-red-700 space-y-1">
+            <% @feedback.errors.full_messages.each do |message| %>
+              <li>• <%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Feedback Type -->
+      <div>
+        <%= f.label :feedback_type, "Issue Type", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= f.select :feedback_type,
+            options_for_select([
+              ['Incorrect Dietary Tag', 'incorrect_tag'],
+              ['Missing Dietary Tag', 'missing_tag'],
+              ['Allergen Issue', 'allergen_issue'],
+              ['Description Issue', 'description_issue'],
+              ['Other', 'other']
+            ], @feedback.feedback_type),
+            {},
+            { class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+      </div>
+
+      <!-- Severity -->
+      <div>
+        <%= f.label :severity, "Severity", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= f.select :severity,
+            options_for_select([
+              ['Low - Minor issue', 'low'],
+              ['Medium - Moderate issue', 'medium'],
+              ['High - Significant issue', 'high'],
+              ['Critical - Safety concern', 'critical']
+            ], @feedback.severity),
+            {},
+            { class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+        <p class="text-xs text-gray-500 mt-1">Select "Critical" for allergen or safety concerns</p>
+      </div>
+
+      <!-- Message -->
+      <div>
+        <%= f.label :message, "Describe the Issue", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= f.text_area :message, 
+            rows: 5,
+            placeholder: "Please describe the issue you encountered. Be as specific as possible...",
+            class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+        <p class="text-xs text-gray-500 mt-1">Minimum 10 characters, maximum 1000 characters</p>
+      </div>
+
+      <!-- Reported Tags -->
+      <div>
+        <%= f.label :reported_tags, "Current Dietary Tags (if incorrect)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="flex flex-wrap gap-2 mb-2">
+          <% MenuItem::COMMON_DIETARY_TAGS.each do |tag| %>
+            <label class="inline-flex items-center">
+              <%= check_box_tag "dietary_feedback[reported_tags][]", tag, 
+                  @feedback.reported_tags&.include?(tag),
+                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+              <span class="ml-2 text-sm text-gray-700"><%= tag.humanize %></span>
+            </label>
+          <% end %>
+        </div>
+        <p class="text-xs text-gray-500">Select tags that are currently listed but are incorrect</p>
+      </div>
+
+      <!-- Suggested Tags -->
+      <div>
+        <%= f.label :suggested_tags, "Suggested Dietary Tags (if missing)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="flex flex-wrap gap-2 mb-2">
+          <% MenuItem::COMMON_DIETARY_TAGS.each do |tag| %>
+            <label class="inline-flex items-center">
+              <%= check_box_tag "dietary_feedback[suggested_tags][]", tag, 
+                  @feedback.suggested_tags&.include?(tag),
+                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" %>
+              <span class="ml-2 text-sm text-gray-700"><%= tag.humanize %></span>
+            </label>
+          <% end %>
+        </div>
+        <p class="text-xs text-gray-500">Select tags that should be added to this item</p>
+      </div>
+
+      <!-- Contact Info (Optional) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :contact_email, "Email (Optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+          <%= f.email_field :contact_email, 
+              placeholder: "your@email.com",
+              class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :contact_phone, "Phone (Optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+          <%= f.telephone_field :contact_phone, 
+              placeholder: "(555) 123-4567",
+              class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="flex gap-4 pt-4">
+        <% begin %>
+          <%= link_to menu_restaurant_path(@restaurant), 
+                      class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+            Cancel
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/menu", 
+                      class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+            Cancel
+          <% end %>
+        <% end %>
+        <%= f.submit "Submit Feedback", 
+            class: "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

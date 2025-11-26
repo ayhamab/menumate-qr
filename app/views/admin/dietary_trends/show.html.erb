@@ -1,0 +1,144 @@
+<% content_for :title, "#{@dietary_trend.dietary_tag.humanize} Trend - Admin" %>
+
+<div class="admin-dietary-trend-show">
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <%= link_to admin_dietary_trends_path, class: "text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900"><%= @dietary_trend.dietary_tag.humanize %> Trend</h1>
+        <p class="text-gray-600 mt-1">Detailed trend analysis</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Trend Details -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Trend Information</h2>
+      
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Dietary Tag</p>
+          <p class="text-xl font-bold text-gray-900"><%= @dietary_trend.dietary_tag.humanize %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Trend Percentage</p>
+          <p class="text-4xl font-bold text-indigo-600"><%= number_with_precision(@dietary_trend.trend_percentage, precision: 2) %>%</p>
+          <p class="text-sm text-gray-600 mt-1">of menu items have this dietary tag</p>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Sample Size</p>
+          <p class="text-2xl font-bold text-gray-900"><%= number_with_delimiter(@dietary_trend.sample_size) %></p>
+          <p class="text-sm text-gray-600 mt-1">total menu items analyzed</p>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Growth Rate</p>
+          <% if @dietary_trend.growth_rate %>
+            <p class="text-2xl font-bold <%= @dietary_trend.growth_rate > 0 ? 'text-green-600' : @dietary_trend.growth_rate < 0 ? 'text-red-600' : 'text-gray-600' %>">
+              <%= @dietary_trend.growth_rate > 0 ? '+' : '' %><%= number_with_precision(@dietary_trend.growth_rate, precision: 2) %>%
+            </p>
+            <p class="text-sm text-gray-600 mt-1">month-over-month change</p>
+          <% else %>
+            <p class="text-gray-500">No growth data available</p>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Region</p>
+          <p class="text-lg text-gray-900"><%= @dietary_trend.region || 'Global' %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Trend Date</p>
+          <p class="text-lg text-gray-900"><%= @dietary_trend.trend_date.strftime("%B %d, %Y") %></p>
+        </div>
+
+        <% if @dietary_trend.metadata.present? %>
+          <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Additional Data</p>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <pre class="text-sm text-gray-700"><%= JSON.pretty_generate(@dietary_trend.metadata) %></pre>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Context -->
+    <div class="space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Market Insights</h2>
+        
+        <div class="space-y-4">
+          <div class="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+            <p class="text-sm font-semibold text-indigo-700 uppercase tracking-wide mb-1">Market Penetration</p>
+            <p class="text-lg text-indigo-900">
+              <%= number_with_precision(@dietary_trend.trend_percentage, precision: 1) %>% of menu items in 
+              <%= @dietary_trend.region || 'the market' %> are tagged as 
+              <strong><%= @dietary_trend.dietary_tag.humanize %></strong>
+            </p>
+          </div>
+
+          <% if @dietary_trend.growth_rate && @dietary_trend.growth_rate > 0 %>
+            <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+              <p class="text-sm font-semibold text-green-700 uppercase tracking-wide mb-1">Growing Trend</p>
+              <p class="text-lg text-green-900">
+                This dietary preference is growing at 
+                <strong><%= number_with_precision(@dietary_trend.growth_rate, precision: 1) %>%</strong> month-over-month, 
+                indicating increasing consumer demand.
+              </p>
+            </div>
+          <% elsif @dietary_trend.growth_rate && @dietary_trend.growth_rate < 0 %>
+            <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <p class="text-sm font-semibold text-yellow-700 uppercase tracking-wide mb-1">Declining Trend</p>
+              <p class="text-lg text-yellow-900">
+                This dietary preference is declining at 
+                <strong><%= number_with_precision(@dietary_trend.growth_rate.abs, precision: 1) %>%</strong> month-over-month.
+              </p>
+            </div>
+          <% end %>
+
+          <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p class="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-1">Data Quality</p>
+            <p class="text-lg text-blue-900">
+              Analysis based on <strong><%= number_with_delimiter(@dietary_trend.sample_size) %></strong> menu items, 
+              providing <%= @dietary_trend.sample_size > 1000 ? 'high' : @dietary_trend.sample_size > 100 ? 'moderate' : 'preliminary' %> confidence in the trend data.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Trends -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Trends</h2>
+        <% related = DietaryTrend.by_tag(@dietary_trend.dietary_tag).where.not(id: @dietary_trend.id).recent.limit(5) %>
+        <% if related.any? %>
+          <div class="space-y-3">
+            <% related.each do |trend| %>
+              <%= link_to admin_dietary_trend_path(trend), class: "block p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition-colors" do %>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-semibold text-gray-900"><%= trend.region || 'Global' %></p>
+                    <p class="text-sm text-gray-600"><%= trend.trend_date.strftime("%b %d, %Y") %></p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-bold text-indigo-600"><%= number_with_precision(trend.trend_percentage, precision: 1) %>%</p>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-500 text-center py-4">No related trends found</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

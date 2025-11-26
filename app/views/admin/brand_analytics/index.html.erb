@@ -1,0 +1,107 @@
+<% content_for :title, "Brand Analytics - Admin" %>
+
+<div class="admin-brand-analytics">
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-4xl font-extrabold text-gray-900">Brand Analytics</h1>
+        <p class="text-gray-600 mt-1">Manage food brand subscriptions for dietary trend data</p>
+      </div>
+      <%= link_to new_admin_brand_analytic_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add New Brand</span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-4">
+      <%= link_to admin_brand_analytics_path, class: "px-4 py-2 rounded-lg #{params[:tier].blank? ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'} font-semibold" do %>
+        All Tiers
+      <% end %>
+      <% BrandAnalytic.subscription_tiers.keys.each do |tier| %>
+        <%= link_to admin_brand_analytics_path(tier: tier), class: "px-4 py-2 rounded-lg #{params[:tier] == tier ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'} font-semibold" do %>
+          <%= BrandAnalytic.subscription_tiers[tier][:name] %>
+        <% end %>
+      <% end %>
+      <%= link_to admin_brand_analytics_path(active: 'true'), class: "px-4 py-2 rounded-lg #{params[:active] == 'true' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'} font-semibold" do %>
+        Active Only
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Brands List -->
+  <% if @brand_analytics.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @brand_analytics.each do |brand| %>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 <%= brand.active? ? 'border-green-300' : 'border-gray-200' %>">
+          <div class="bg-gradient-to-r <%= brand.subscription_tier == 'basic' ? 'from-gray-500 to-gray-600' : brand.subscription_tier == 'premium' ? 'from-indigo-500 to-purple-600' : 'from-purple-600 to-pink-600' %> px-6 py-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-bold text-white"><%= brand.brand_name %></h3>
+              <% if brand.active? %>
+                <span class="bg-white text-green-600 text-xs font-bold px-2 py-1 rounded-full">ACTIVE</span>
+              <% else %>
+                <span class="bg-white text-gray-600 text-xs font-bold px-2 py-1 rounded-full">INACTIVE</span>
+              <% end %>
+            </div>
+            <p class="text-white/80 text-sm mt-1"><%= brand.email %></p>
+          </div>
+
+          <div class="p-6">
+            <div class="mb-4">
+              <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Subscription Tier</p>
+              <p class="text-lg font-bold text-gray-900"><%= brand.subscription_details[:name] %></p>
+              <p class="text-sm text-gray-600">$<%= number_with_precision(brand.subscription_details[:price], precision: 2) %>/month</p>
+            </div>
+
+            <div class="mb-4 space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">API Calls (This Month)</span>
+                <span class="font-semibold text-gray-900"><%= brand.api_calls_count %></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Last Access</span>
+                <span class="font-semibold text-gray-900">
+                  <%= brand.last_access_at ? time_ago_in_words(brand.last_access_at) + ' ago' : 'Never' %>
+                </span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200 flex gap-2">
+              <%= link_to admin_brand_analytic_path(brand), class: "flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <span>View</span>
+              <% end %>
+              <%= link_to edit_admin_brand_analytic_path(brand), class: "flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span>Edit</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+      <svg class="w-20 h-20 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">No Brand Analytics Accounts</h3>
+      <p class="text-gray-600 mb-6">Create your first brand analytics account to start selling dietary trend data</p>
+      <%= link_to new_admin_brand_analytic_path, class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Add New Brand</span>
+      <% end %>
+    </div>
+  <% end %>
+</div>

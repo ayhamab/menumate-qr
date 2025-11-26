@@ -1,0 +1,1128 @@
+<% content_for :title, "Menu - #{@restaurant.name} - MenuMate QR" %>
+<% branding = restaurant_branding(@restaurant) %>
+
+<!-- Premium Typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+
+<% if branding.has_custom_branding? %>
+  <style>
+    :root {
+      <%= branding_css_variables(@restaurant) %>
+    }
+    body {
+      font-family: var(--font-family);
+    }
+    <%= branding.custom_css.html_safe if branding.custom_css.present? %>
+  </style>
+<% end %>
+
+<!-- Responsive Menu Styles -->
+<style>
+  /* ============================================
+     FLUID TYPOGRAPHY - Scales smoothly across all devices
+     ============================================ */
+  .menu-title {
+    font-size: clamp(1.75rem, 5vw + 0.5rem, 4.5rem);
+    line-height: 1.1;
+  }
+  
+  .menu-subtitle {
+    font-size: clamp(1rem, 2.5vw + 0.25rem, 2rem);
+    line-height: 1.4;
+  }
+  
+  .category-title {
+    font-size: clamp(1.5rem, 3.5vw + 0.5rem, 3rem);
+    line-height: 1.2;
+  }
+  
+  .item-title {
+    font-size: clamp(1rem, 2vw + 0.25rem, 1.75rem);
+    line-height: 1.3;
+  }
+  
+  .item-price {
+    font-size: clamp(1.5rem, 3vw + 0.5rem, 3rem);
+    line-height: 1.2;
+  }
+  
+  /* ============================================
+     MOBILE FIRST (320px+) - Stack layout, touch-friendly
+     ============================================ */
+  .public-menu-page {
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Header - Mobile */
+  header {
+    padding: 1.25rem 1rem !important;
+  }
+  
+  /* Sticky filter bar - Mobile */
+  .sticky-filter-bar {
+    padding: 0.75rem 0.875rem !important;
+  }
+  
+  .sticky-filter-bar .flex {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  /* Filter button container - Mobile */
+  .sticky-filter-bar .flex > div:last-of-type {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  /* Filter buttons - Mobile (minimum 44px touch target) */
+  .filter-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.625rem 1rem;
+    font-size: clamp(0.75rem, 2vw, 0.875rem);
+    flex-shrink: 0;
+  }
+  
+  /* Menu items grid - Mobile: Single column */
+  .menu-items-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    width: 100%;
+  }
+  
+  /* Menu item cards - Mobile */
+  .menu-item-card {
+    width: 100%;
+    margin-bottom: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .menu-item-image {
+    height: clamp(180px, 40vw, 220px);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .menu-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .menu-item-content {
+    padding: 1rem;
+  }
+  
+  /* Category headers - Mobile */
+  .category-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* ============================================
+     SMALL MOBILE (375px+) - Enhanced spacing
+     ============================================ */
+  @media (min-width: 375px) {
+    header {
+      padding: 1.5rem 1.25rem !important;
+    }
+    
+    .sticky-filter-bar {
+      padding: 0.875rem 1rem !important;
+    }
+    
+    .filter-button {
+      padding: 0.75rem 1.25rem;
+      min-height: 48px;
+    }
+    
+    .menu-item-image {
+      height: clamp(200px, 45vw, 240px);
+    }
+    
+    /* Better button spacing on small mobile */
+    .sticky-filter-bar .flex > div:nth-child(2) {
+      gap: 0.5rem;
+    }
+    
+    .menu-item-content {
+      padding: 1.25rem;
+    }
+  }
+  
+  /* ============================================
+     TABLET PORTRAIT (768px+) - Grid layout, larger touch targets
+     ============================================ */
+  @media (min-width: 768px) {
+    header {
+      padding: 2.5rem 2rem !important;
+    }
+    
+    .sticky-filter-bar {
+      padding: 1rem 1.5rem !important;
+    }
+    
+    .sticky-filter-bar .flex {
+      flex-wrap: nowrap;
+      gap: 0.75rem;
+    }
+    
+    /* Filter button container - Tablet */
+    .sticky-filter-bar .flex > div:last-of-type {
+      width: auto;
+      margin-top: 0;
+    }
+    
+    .filter-button {
+      min-height: 52px;
+      min-width: 52px;
+      padding: 0.875rem 1.5rem;
+      font-size: clamp(0.875rem, 1.5vw, 0.9375rem);
+    }
+    
+    /* Menu items - 2 columns on tablet */
+    .menu-items-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    
+    .menu-item-image {
+      height: clamp(220px, 30vw, 280px);
+    }
+    
+    /* Better filter button layout on tablet */
+    .sticky-filter-bar .flex > div:nth-child(2) {
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .menu-item-content {
+      padding: 1.5rem;
+    }
+    
+    .category-header {
+      margin-bottom: 2rem;
+    }
+    
+    /* Better spacing for tablet */
+    .menu-item-card {
+      margin-bottom: 0;
+    }
+  }
+  
+  /* ============================================
+     TABLET LANDSCAPE / SMALL DESKTOP (1024px+) 
+     Multi-column design, hover effects
+     ============================================ */
+  @media (min-width: 1024px) {
+    header {
+      padding: 3.5rem 3rem !important;
+    }
+    
+    .sticky-filter-bar {
+      padding: 1.25rem 2rem !important;
+    }
+    
+    .filter-button {
+      min-height: 56px;
+      min-width: 56px;
+      padding: 1rem 1.75rem;
+      font-size: 1rem;
+    }
+    
+    /* Menu items - 3 columns on desktop */
+    .menu-items-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    
+    .menu-item-image {
+      height: clamp(250px, 25vw, 320px);
+    }
+    
+    .menu-item-content {
+      padding: 2rem;
+    }
+    
+    /* Hover effects - Desktop only (not touch devices) */
+    @media (hover: hover) and (pointer: fine) {
+      .menu-item-card {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.3s ease;
+      }
+      
+      .menu-item-card:hover {
+        transform: translateY(-0.5rem) scale(1.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+      
+      .filter-button:hover {
+        transform: scale(1.08);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* Image zoom on hover */
+      .menu-item-card:hover .menu-item-image img {
+        transform: scale(1.1);
+      }
+      
+      /* Overlay on hover */
+      .menu-item-card:hover .desktop-hover-overlay {
+        opacity: 1;
+      }
+    }
+    
+    /* Focus states for keyboard navigation */
+    .menu-item-card:focus-visible {
+      outline: 3px solid rgba(251, 191, 36, 0.8);
+      outline-offset: 4px;
+      border-radius: 1rem;
+    }
+    
+    .filter-button:focus-visible {
+      outline: 3px solid rgba(251, 191, 36, 0.8);
+      outline-offset: 2px;
+    }
+  }
+  
+  /* ============================================
+     LARGE DESKTOP (1280px+) - 4 columns
+     ============================================ */
+  @media (min-width: 1280px) {
+    .menu-items-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    
+    .menu-item-image {
+      height: clamp(280px, 22vw, 340px);
+    }
+  }
+  
+  /* ============================================
+     EXTRA LARGE DESKTOP (1536px+) - 5 columns
+     ============================================ */
+  @media (min-width: 1536px) {
+    .menu-items-grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2.5rem;
+    }
+    
+    .menu-item-image {
+      height: clamp(300px, 20vw, 360px);
+    }
+  }
+  
+  /* ============================================
+     TOUCH DEVICE OPTIMIZATIONS
+     ============================================ */
+  @media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets on touch devices */
+    .filter-button {
+      min-height: 52px;
+      min-width: 52px;
+      padding: 0.875rem 1.5rem;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .menu-item-card:hover {
+      transform: none !important;
+    }
+    
+    .filter-button:hover {
+      transform: none !important;
+    }
+    
+    /* Active state for touch feedback */
+    .filter-button:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+    
+    .menu-item-card:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
+    }
+    
+    /* Larger tap targets for all interactive elements */
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* ============================================
+     TOUCH MANIPULATION & PERFORMANCE
+     ============================================ */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(251, 191, 36, 0.3);
+  }
+  
+  /* Prevent text selection on buttons during tap */
+  button, .filter-button {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body, .public-menu-page {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* ============================================
+     LANDSCAPE MOBILE ADJUSTMENTS
+     ============================================ */
+  @media (max-width: 767px) and (orientation: landscape) {
+    header {
+      padding: 1.25rem 1rem !important;
+    }
+    
+    .menu-title {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+    
+    .sticky-filter-bar {
+      padding: 0.625rem 1rem !important;
+    }
+    
+    .menu-item-image {
+      height: clamp(160px, 25vh, 200px);
+    }
+  }
+  
+  /* ============================================
+     PRINT STYLES
+     ============================================ */
+  @media print {
+    .sticky-filter-bar,
+    .voice-command-section,
+    button,
+    .filter-button {
+      display: none !important;
+    }
+    
+    .menu-items-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .menu-item-card {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+  
+  /* ============================================
+     ACCESSIBILITY IMPROVEMENTS
+     ============================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .menu-item-card {
+      border-width: 2px;
+      border-color: currentColor;
+    }
+    
+    .filter-button {
+      border-width: 2px;
+    }
+  }
+</style>
+
+<%= turbo_stream_from "menu_updates_restaurant_#{@restaurant.id}" %>
+
+<div class="public-menu-page min-h-screen bg-gradient-to-b from-amber-50 via-stone-50 to-amber-50/30" 
+     data-restaurant-id="<%= @restaurant.id %>" 
+     data-controller="location-detection menu-item-tracking"
+     data-location-detection-restaurant-id-value="<%= @restaurant.id %>"
+     data-location-detection-menu-url-value="<%= menu_restaurant_path(@restaurant) rescue "/restaurants/#{@restaurant.id}/menu" %>"
+     style="<%= branding.has_custom_branding? ? branding.inline_styles : '' %>" 
+     role="main">
+  <!-- Hero Header -->
+  <header class="w-full bg-gradient-to-br from-amber-600 via-amber-500 to-orange-500 shadow-2xl overflow-hidden" role="banner">
+    <div class="w-full px-4 sm:px-6 md:px-12 lg:px-16 xl:px-24 py-8 sm:py-12 md:py-16 lg:py-20">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start gap-6 md:gap-8">
+          <div class="flex-1 w-full">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <% if branding.logo.attached? %>
+                <div class="mr-0 sm:mr-4 mb-3 sm:mb-0" role="img" aria-label="<%= branding.display_name %> logo">
+                  <%= image_tag branding.logo, class: "h-16 sm:h-20 w-auto drop-shadow-lg", alt: "#{branding.display_name} logo" %>
+                </div>
+              <% end %>
+              <div class="flex-1">
+                <h1 class="menu-title font-black text-white leading-tight mb-2 tracking-tight" style="font-family: 'Playfair Display', serif;">
+                  <%= branding.display_name %>
+                </h1>
+                <div class="h-1 sm:h-1.5 w-24 sm:w-32 bg-white/80 rounded-full"></div>
+              </div>
+            </div>
+            <% if branding.tagline.present? %>
+              <p class="menu-subtitle text-white/95 font-light mb-4 sm:mb-6 italic" style="font-family: 'Cormorant Garamond', serif;"><%= branding.tagline %></p>
+            <% end %>
+            <h2 class="text-amber-100 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 tracking-wide uppercase" style="font-family: 'Playfair Display', serif; letter-spacing: 0.15em;">Menu</h2>
+            <% if @restaurant.description.present? %>
+              <p class="text-white/90 text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl font-light" style="font-family: 'Cormorant Garamond', serif;">
+                <%= @restaurant.description %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Dietary Filter Bar -->
+  <div class="sticky-filter-bar sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md shadow-lg border-b-2 border-amber-200/50" data-controller="menu-filter">
+    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-5">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+          </svg>
+          <span class="text-xs sm:text-sm md:text-base font-bold text-amber-900 hidden sm:inline" style="font-family: 'Playfair Display', serif;">Filter by:</span>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 md:gap-3 w-full sm:w-auto" role="group" aria-label="Dietary filter buttons">
+          <button 
+            type="button"
+            data-menu-filter-target="button"
+            data-action="click->menu-filter#filter"
+            data-filter="vegan"
+            aria-label="Filter menu to show vegan items"
+            aria-pressed="false"
+            class="filter-button px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700 border-2 border-emerald-400/50 hover:border-emerald-500 shadow-md hover:shadow-xl transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 flex items-center justify-center gap-1.5 sm:gap-2 touch-manipulation">
+            <span aria-hidden="true" class="text-base md:text-lg">🌱</span> 
+            <span class="hidden sm:inline">Vegan</span>
+          </button>
+          <button 
+            type="button"
+            data-menu-filter-target="button"
+            data-action="click->menu-filter#filter"
+            data-filter="vegetarian"
+            aria-label="Filter menu to show vegetarian items"
+            aria-pressed="false"
+            class="filter-button px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 border-2 border-green-400/50 hover:border-green-500 shadow-md hover:shadow-xl transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center gap-1.5 sm:gap-2 touch-manipulation">
+            <span aria-hidden="true" class="text-base md:text-lg">🥬</span> 
+            <span class="hidden sm:inline">Vegetarian</span>
+          </button>
+          <button 
+            type="button"
+            data-menu-filter-target="button"
+            data-action="click->menu-filter#filter"
+            data-filter="gluten-free"
+            aria-label="Filter menu to show gluten-free items"
+            aria-pressed="false"
+            class="filter-button px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 border-2 border-amber-400/50 hover:border-amber-500 shadow-md hover:shadow-xl transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 flex items-center justify-center gap-1.5 sm:gap-2 touch-manipulation">
+            <span aria-hidden="true" class="text-base md:text-lg">🌾</span> 
+            <span class="hidden sm:inline">Gluten-Free</span>
+          </button>
+          <button 
+            type="button"
+            data-menu-filter-target="button"
+            data-action="click->menu-filter#filter"
+            data-filter="dairy-free"
+            aria-label="Filter menu to show dairy-free items"
+            aria-pressed="false"
+            class="filter-button px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 bg-gradient-to-r from-amber-400 to-yellow-500 text-white hover:from-amber-500 hover:to-yellow-600 border-2 border-amber-300/50 hover:border-amber-400 shadow-md hover:shadow-xl transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 flex items-center justify-center gap-1.5 sm:gap-2 touch-manipulation">
+            <span aria-hidden="true" class="text-base md:text-lg">🥛</span> 
+            <span class="hidden sm:inline">Dairy-Free</span>
+          </button>
+          <button 
+            type="button"
+            data-menu-filter-target="button"
+            data-action="click->menu-filter#filter"
+            data-filter="nut-free"
+            aria-label="Filter menu to show nut-free items"
+            aria-pressed="false"
+            class="filter-button px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 border-2 border-orange-400/50 hover:border-orange-500 shadow-md hover:shadow-xl transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 flex items-center justify-center gap-1.5 sm:gap-2 touch-manipulation">
+            <span aria-hidden="true" class="text-base md:text-lg">🥜</span> 
+            <span class="hidden sm:inline">Nut-Free</span>
+          </button>
+        </div>
+        <div class="bg-gradient-to-r from-amber-600 to-orange-500 text-white text-xs sm:text-sm md:text-base font-bold px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 rounded-full shadow-lg border-2 border-amber-400/30 flex-shrink-0 min-h-[44px] flex items-center justify-center" data-menu-filter-target="count" role="status" aria-live="polite" aria-atomic="true">
+          <span class="sr-only">Menu items count: </span><%= pluralize(@menu_items.count, 'item') %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Selection (moved from header) -->
+  <% if @available_locations.any? %>
+    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 mt-6 sm:mt-8 mb-6 sm:mb-8">
+      <div class="bg-gradient-to-r from-amber-100/80 to-orange-100/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 border-amber-200/50 shadow-lg">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="text-amber-900 font-semibold text-sm sm:text-base">Location:</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 flex-1 w-full sm:w-auto">
+            <% if @selected_location %>
+              <span class="bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <%= @selected_location.name %>
+              </span>
+              <% begin %>
+                <%= link_to "Change", menu_restaurant_path(@restaurant), class: "text-amber-700 hover:text-amber-900 text-sm font-semibold underline" %>
+              <% rescue %>
+                <%= link_to "Change", "/restaurants/#{@restaurant.id}/menu", class: "text-amber-700 hover:text-amber-900 text-sm font-semibold underline" %>
+              <% end %>
+            <% else %>
+              <button 
+                type="button"
+                data-action="click->location-detection#requestLocation"
+                class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Use My Location
+              </button>
+              <span class="text-amber-800 text-sm">or</span>
+              <select 
+                onchange="if(this.value) window.location.href='<%= menu_restaurant_path(@restaurant) rescue "/restaurants/#{@restaurant.id}/menu" %>?location_id=' + this.value"
+                class="bg-white hover:bg-amber-50 text-amber-900 px-4 py-2 rounded-lg font-semibold text-sm border-2 border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                <option value="">Select Location</option>
+                <% @available_locations.each do |location| %>
+                  <option value="<%= location.id %>" <%= 'selected' if @selected_location&.id == location.id %>>
+                    <%= location.name %>
+                  </option>
+                <% end %>
+              </select>
+            <% end %>
+          </div>
+        </div>
+        <div id="location-status" class="text-amber-800/80 text-xs mt-2"></div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Main Content Area -->
+  <div class="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+    <div class="flex flex-col gap-3">
+          <!-- Language Selector -->
+          <% if @available_languages.length > 1 %>
+            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+              <label for="language-selector" class="block text-white text-sm font-semibold mb-2">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                </svg>
+                Language
+              </label>
+              <%= form_with url: menu_restaurant_path(@restaurant), method: :get, local: true, class: "flex gap-2" do |f| %>
+                <%= f.select :lang, 
+                    options_for_select(@available_languages.map { |lang| [MenuItem.supported_languages[lang] || lang.upcase, lang] }, @current_language),
+                    {},
+                    { 
+                      onchange: "this.form.submit()",
+                      class: "bg-white text-gray-900 font-semibold py-2 px-4 rounded-lg border-2 border-white/50 focus:ring-2 focus:ring-white focus:border-white transition-all text-sm"
+                    } %>
+              <% end %>
+            </div>
+          <% end %>
+                 <%= link_to restaurant_path(@restaurant), class: "bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 border border-white/30" do %>
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                   </svg>
+                   <span>Back to Restaurant</span>
+                 <% end %>
+                 <% begin %>
+                   <%= link_to menu_restaurant_path(@restaurant, print: true), target: '_blank', class: "bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 border border-white/30 no-print" do %>
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                     </svg>
+                     <span>Print Menu</span>
+                   <% end %>
+                 <% rescue %>
+                   <%= link_to "/restaurants/#{@restaurant.id}/menu?print=true", target: '_blank', class: "bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 border border-white/30 no-print" do %>
+                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                     </svg>
+                     <span>Print Menu</span>
+                   <% end %>
+                 <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Promotions Banner -->
+  <% if @active_promotions.any? %>
+    <div class="mb-8 space-y-4">
+      <% @active_promotions.each do |promotion| %>
+        <div class="bg-gradient-to-r <%= promotion.badge_color == 'red' ? 'from-red-500 to-red-600' : promotion.badge_color == 'orange' ? 'from-orange-500 to-orange-600' : promotion.badge_color == 'yellow' ? 'from-yellow-500 to-yellow-600' : promotion.badge_color == 'green' ? 'from-green-500 to-green-600' : promotion.badge_color == 'blue' ? 'from-blue-500 to-blue-600' : promotion.badge_color == 'purple' ? 'from-purple-500 to-purple-600' : 'from-pink-500 to-pink-600' %> rounded-2xl shadow-2xl overflow-hidden p-6 md:p-8">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-white"><%= promotion.title %></h2>
+                <span class="bg-white text-<%= promotion.badge_color == 'red' ? 'red' : promotion.badge_color == 'orange' ? 'orange' : promotion.badge_color == 'yellow' ? 'yellow' : promotion.badge_color == 'green' ? 'green' : promotion.badge_color == 'blue' ? 'blue' : promotion.badge_color == 'purple' ? 'purple' : 'pink' %>-600 text-sm font-bold px-3 py-1 rounded-full"><%= promotion.discount_display %></span>
+              </div>
+              <% if promotion.description.present? %>
+                <p class="text-white/90 text-lg mb-2"><%= promotion.description %></p>
+              <% end %>
+              <p class="text-white/80 text-sm">
+                Valid until <%= promotion.end_date.strftime("%B %d, %Y at %I:%M %p") %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Menu Items -->
+  <% if @menu_items.any? %>
+    <div class="mb-6" data-controller="menu-filter">
+      <div class="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 mb-12">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b-2 border-amber-200/50">
+          <div class="flex-1">
+            <h2 class="text-5xl md:text-6xl lg:text-7xl font-black text-amber-900 mb-4 tracking-tight" style="font-family: 'Playfair Display', serif;">
+              Our Menu
+            </h2>
+            <p class="text-xl md:text-2xl text-amber-800/80 font-light italic" style="font-family: 'Cormorant Garamond', serif;">Discover our carefully crafted offerings</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="bg-gradient-to-r from-amber-600 to-orange-500 text-white text-lg font-bold px-8 py-4 rounded-full shadow-xl border-2 border-amber-400/30" data-menu-filter-target="count" role="status" aria-live="polite" aria-atomic="true">
+              <span class="sr-only">Menu items count: </span><%= pluralize(@menu_items.count, 'item') %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice Command Interface -->
+      <div class="mb-6" data-controller="voice-command">
+        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-6 border border-purple-200 border-2">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                </svg>
+                <h3 class="text-lg font-bold text-gray-900">Voice Commands</h3>
+              </div>
+              <p class="text-sm text-gray-600 mb-4">Use your voice to filter menu items hands-free. Say "vegan", "gluten-free", "vegetarian", etc.</p>
+              
+              <!-- Voice Status -->
+              <div class="mb-3">
+                <div class="hidden text-sm font-semibold text-purple-700" data-voice-command-target="status" role="status" aria-live="polite" aria-atomic="true"></div>
+                <div class="hidden text-sm font-medium px-4 py-2 rounded-lg" data-voice-command-target="feedback" role="alert" aria-live="assertive"></div>
+              </div>
+            </div>
+            
+            <!-- Voice Button -->
+            <button
+              type="button"
+              data-voice-command-target="button"
+              data-action="click->voice-command#toggleListening"
+              aria-label="Toggle voice command listening"
+              aria-pressed="false"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+              </svg>
+              <span>Voice Filter</span>
+            </button>
+          </div>
+          
+          <!-- Help Text -->
+          <div class="mt-4 pt-4 border-t border-purple-200">
+            <p class="text-xs text-gray-600">
+              <strong>Try saying:</strong> "Show me vegan items", "Filter gluten-free", "Find vegetarian", "Clear filter", or "Help"
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Location Notice -->
+      <% if @selected_location %>
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-blue-900">Showing menu for: <span class="text-blue-700"><%= @selected_location.name %></span></p>
+              <p class="text-xs text-blue-700"><%= @selected_location.address %></p>
+            </div>
+            <% begin %>
+              <%= link_to menu_restaurant_path(@restaurant), class: "text-blue-600 hover:text-blue-800 text-sm font-semibold underline" do %>
+                View All Locations
+              <% end %>
+            <% rescue %>
+              <%= link_to "/restaurants/#{@restaurant.id}/menu", class: "text-blue-600 hover:text-blue-800 text-sm font-semibold underline" do %>
+                View All Locations
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Menu Items by Category -->
+      <div class="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 space-y-16 md:space-y-20" data-controller="menu-filter">
+        <% @menu_items_by_category.each do |category, items| %>
+          <div class="category-section">
+            <!-- Category Header -->
+            <div class="category-header w-full mb-8 sm:mb-12 relative">
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-amber-200/50">
+                <div class="flex-1 w-full">
+                  <h2 id="category_<%= category.present? ? category.parameterize : 'uncategorized' %>" class="category-title font-black text-amber-900 mb-2 sm:mb-3 tracking-tight" style="font-family: 'Playfair Display', serif;">
+                    <%= category.present? ? category : (@current_language == 'en' ? 'Menu Items' : 'Menu Items') %>
+                  </h2>
+                  <div class="h-1.5 sm:h-2 w-24 sm:w-40 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-md" aria-hidden="true"></div>
+                </div>
+                <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 border-2 border-amber-400/30 shadow-lg min-h-[44px] flex items-center justify-center">
+                  <span class="text-sm sm:text-base font-bold"><%= items.count %> <%= items.count == 1 ? 'item' : 'items' %></span>
+                </div>
+              </div>
+            </div>
+
+          <!-- Items Grid -->
+          <div id="public_menu_items_<%= category.present? ? category.parameterize : 'uncategorized' %>" 
+               class="menu-items-grid w-full grid"
+               role="list"
+               aria-label="<%= category.present? ? category : 'Menu items' %>">
+            <% items.each do |item| %>
+              <div role="listitem">
+                <%= render partial: "restaurants/menu_item_public_card", locals: { menu_item: item, current_language: @current_language, restaurant: @restaurant } %>
+              </div>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+      </div>
+    </div>
+  <% else %>
+    <!-- Empty State -->
+    <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+      <svg class="w-20 h-20 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">No Menu Items Available</h3>
+      <p class="text-gray-600 mb-4">This restaurant hasn't added any menu items yet.</p>
+      <%= link_to restaurant_path(@restaurant), class: "inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold" do %>
+        <span>Return to Restaurant</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- QR Code Sharing Section -->
+  <div class="mt-12 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="p-8 md:p-12">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- QR Code Display -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-4 text-center md:text-left">
+            Share This Menu
+          </h3>
+          <p class="text-indigo-100 text-lg mb-6 text-center md:text-left max-w-md">
+            Scan or share this QR code to access the menu anytime, anywhere
+          </p>
+          <div class="bg-white p-6 rounded-2xl shadow-2xl border-4 border-white/20 mb-4">
+            <% 
+              begin
+                menu_url = menu_restaurant_url(@restaurant)
+              rescue NoMethodError, NameError
+                menu_url = "#{request.protocol}#{request.host_with_port}#{menu_restaurant_path(@restaurant)}"
+              end
+            %>
+            <%= qr_code_svg(menu_url, size: 200) %>
+          </div>
+          <!-- Download QR Code -->
+          <button 
+            onclick="downloadQRCode()"
+            class="bg-white/20 hover:bg-white/30 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/30 backdrop-blur-sm text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span>Download QR Code</span>
+          </button>
+        </div>
+        
+        <!-- Social Sharing -->
+        <div class="flex flex-col justify-center">
+          <h4 class="text-xl font-bold text-white mb-4">Share on Social Media</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <% 
+              share_text = "Check out #{@restaurant.name}'s menu!"
+            %>
+            <!-- Facebook -->
+            <a href="<%= facebook_share_url(menu_url) %>" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <span class="text-sm">Facebook</span>
+            </a>
+            
+            <!-- Twitter -->
+            <a href="<%= twitter_share_url(menu_url, share_text) %>" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              <span class="text-sm">Twitter</span>
+            </a>
+            
+            <!-- WhatsApp -->
+            <a href="<%= whatsapp_share_url(menu_url, share_text) %>" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+              </svg>
+              <span class="text-sm">WhatsApp</span>
+            </a>
+            
+            <!-- LinkedIn -->
+            <a href="<%= linkedin_share_url(menu_url) %>" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              <span class="text-sm">LinkedIn</span>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Send to Phone -->
+        <div class="flex flex-col justify-center">
+          <h4 class="text-xl font-bold text-white mb-4">Send to Phone</h4>
+          <div class="space-y-3">
+            <% 
+              email_subject = "#{@restaurant.name} Menu"
+              email_body = "Check out #{@restaurant.name}'s menu: #{menu_url}"
+            %>
+            <!-- SMS -->
+            <a href="<%= sms_share_url(menu_url, share_text) %>" 
+               class="w-full bg-white hover:bg-indigo-50 text-indigo-600 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+              <span>Send via SMS</span>
+            </a>
+            
+            <!-- Email -->
+            <a href="<%= email_share_url(menu_url, email_subject, email_body) %>" 
+               class="w-full bg-white hover:bg-indigo-50 text-indigo-600 font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              <span>Send via Email</span>
+            </a>
+            
+            <!-- Native Share -->
+            <button 
+              onclick="shareMenu()"
+              class="w-full bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 backdrop-blur-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+              </svg>
+              <span>Share Menu</span>
+            </button>
+            
+            <!-- Copy Link -->
+            <button 
+              onclick="copyMenuLink()"
+              class="w-full bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 border border-white/30 backdrop-blur-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+              <span id="copy-button-text">Copy Menu Link</span>
+            </button>
+          </div>
+          
+          <!-- Menu URL Display -->
+          <div class="mt-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <p class="text-xs font-semibold text-indigo-100 uppercase tracking-wide mb-2">Menu URL</p>
+            <div class="flex items-center gap-2 bg-white/10 rounded-lg p-2">
+              <code class="text-white text-sm font-mono flex-1 truncate" id="menu-url"><%= menu_url %></code>
+              <button 
+                onclick="copyMenuLink()"
+                class="text-white hover:text-indigo-200 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const menuUrl = '<%= menu_url %>';
+    const shareText = '<%= "Check out #{@restaurant.name}'s menu!" %>';
+    const restaurantName = '<%= @restaurant.name %>';
+    
+    function shareMenu() {
+      if (navigator.share) {
+        navigator.share({
+          title: restaurantName + ' Menu',
+          text: shareText,
+          url: menuUrl
+        }).catch(() => {
+          copyMenuLink();
+        });
+      } else {
+        copyMenuLink();
+      }
+    }
+    
+    function copyMenuLink() {
+      navigator.clipboard.writeText(menuUrl).then(() => {
+        const button = document.getElementById('copy-button-text');
+        if (button) {
+          const original = button.textContent;
+          button.textContent = 'Copied!';
+          setTimeout(() => {
+            button.textContent = original;
+          }, 2000);
+        }
+      }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = menuUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Menu link copied to clipboard!');
+      });
+    }
+    
+    function downloadQRCode() {
+      const qrSvg = document.querySelector('svg');
+      if (!qrSvg) return;
+      
+      const svgData = new XMLSerializer().serializeToString(qrSvg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const pngFile = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.download = restaurantName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_menu_qr.png';
+        downloadLink.href = pngFile;
+        downloadLink.click();
+      };
+      
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    }
+  </script>
+
+  <!-- Restaurant Info Footer -->
+  <div class="mt-12 bg-gradient-to-br from-white to-indigo-50 rounded-2xl shadow-xl overflow-hidden border-2 border-indigo-100">
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+      <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        Restaurant Information
+      </h3>
+    </div>
+    <div class="p-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="bg-indigo-100 p-3 rounded-lg">
+              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Address</p>
+              <p class="text-gray-900 text-lg font-semibold"><%= @restaurant.address %></p>
+            </div>
+          </div>
+          <a href="https://maps.google.com/?q=<%= URI.encode_www_form_component(@restaurant.address) %>" 
+             target="_blank" 
+             class="inline-flex items-center gap-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            View on Google Maps
+          </a>
+        </div>
+        <% if @restaurant.phone_number.present? %>
+          <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="bg-purple-100 p-3 rounded-lg">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Phone Number</p>
+                <a href="tel:<%= @restaurant.phone_number.gsub(/\s/, '') %>" 
+                   class="text-gray-900 text-lg font-semibold hover:text-indigo-600 transition-colors">
+                  <%= @restaurant.phone_number %>
+                </a>
+              </div>
+            </div>
+            <p class="text-gray-500 text-sm mt-2">Click to call</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer with optional branding -->
+  <% if show_menumate_branding?(@restaurant) %>
+    <div class="mt-12 pt-8 border-t border-gray-200 text-center">
+      <p class="text-gray-500 text-sm">
+        Powered by <span class="font-semibold text-indigo-600">MenuMate QR</span>
+      </p>
+    </div>
+  <% end %>
+</div>
+

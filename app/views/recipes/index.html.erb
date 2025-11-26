@@ -1,0 +1,141 @@
+<% content_for :title, "Recipes - #{@restaurant.name}" %>
+
+<div class="recipes-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Recipes</h1>
+        <p class="text-gray-600 text-lg"><%= @restaurant.name %></p>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+          <% begin %>
+            <%= link_to new_restaurant_recipe_path(@restaurant), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>New Recipe</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/recipes/new", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>New Recipe</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search/Filter -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+    <%= form_with url: restaurant_recipes_path(@restaurant), method: :get, local: true, class: "flex flex-wrap gap-4 items-end" do |f| %>
+      <div class="flex-1 min-w-[200px]">
+        <%= f.label :search, "Search Recipes", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= f.text_field :search, value: params[:search], placeholder: "Search by name...", class: "w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+      <%= f.submit "Search", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200" %>
+      <% if params[:search].present? %>
+        <%= link_to "Clear", restaurant_recipes_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-xl transition-all duration-200" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Recipes Grid -->
+  <% if @recipes.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @recipes.each do |recipe| %>
+        <% begin %>
+          <%= link_to restaurant_recipe_path(@restaurant, recipe), class: "block bg-white rounded-2xl shadow-xl p-6 border border-gray-200 hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1" do %>
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2"><%= recipe.name %></h3>
+                <% if recipe.menu_item.present? %>
+                  <p class="text-sm text-gray-600">Menu Item: <%= recipe.menu_item.name %></p>
+                <% else %>
+                  <p class="text-sm text-gray-500 italic">Standalone recipe</p>
+                <% end %>
+              </div>
+              <div class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold">
+                <%= recipe.base_servings %> <%= 'serving'.pluralize(recipe.base_servings) %>
+              </div>
+            </div>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Ingredients:</span>
+                <span class="font-bold text-gray-900"><%= recipe.recipe_ingredients.count %></span>
+              </div>
+              <% if recipe.total_time > 0 %>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Total Time:</span>
+                  <span class="font-bold text-gray-900"><%= recipe.total_time_display %></span>
+                </div>
+              <% end %>
+              <% if recipe.difficulty.present? %>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Difficulty:</span>
+                  <span class="font-bold text-gray-900 capitalize"><%= recipe.difficulty %></span>
+                </div>
+              <% end %>
+            </div>
+            
+            <% if recipe.has_allergens? %>
+              <div class="bg-red-50 border border-red-200 rounded-lg p-2 mt-4">
+                <p class="text-xs font-semibold text-red-800">Contains Allergens</p>
+              </div>
+            <% end %>
+          <% end %>
+        <% rescue %>
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-900 mb-2"><%= recipe.name %></h3>
+            <p class="text-sm text-gray-600"><%= recipe.base_servings %> servings</p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-2xl shadow-lg p-16 text-center border-2 border-dashed border-gray-200">
+      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+      </svg>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">No Recipes Yet</h3>
+      <p class="text-gray-600 mb-8">Create your first recipe to manage ingredients and portions</p>
+      <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+        <% begin %>
+          <%= link_to new_restaurant_recipe_path(@restaurant), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Create First Recipe</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/recipes/new", class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Create First Recipe</span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

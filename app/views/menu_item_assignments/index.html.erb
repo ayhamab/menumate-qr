@@ -1,0 +1,160 @@
+<% content_for :title, "Assignments - #{@menu_item.name}" %>
+
+<div class="assignments-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Menu Item Assignments</h1>
+        <p class="text-gray-600 text-lg"><%= @menu_item.name %></p>
+      </div>
+      <% begin %>
+        <%= link_to restaurant_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back</span>
+        <% end %>
+      <% rescue %>
+        <%= link_to "/restaurants/#{@restaurant.id}", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Back</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- New Assignment Form -->
+  <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Assign to Team Member</h2>
+      <%= form_with model: [@restaurant, @menu_item, MenuItemAssignment.new], local: true, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <%= form.label :assigned_to_id, "Team Member", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.collection_select :assigned_to_id,
+                                        @team_members.map { |tm| tm.user },
+                                        :id,
+                                        :email,
+                                        { prompt: "Select team member..." },
+                                        { 
+                                          required: true,
+                                          class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        } %>
+          </div>
+          <div>
+            <%= form.label :priority, "Priority", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.select :priority,
+                            [['Low', 'low'], ['Medium', 'medium'], ['High', 'high'], ['Urgent', 'urgent']],
+                            { prompt: "Select priority..." },
+                            { class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+          </div>
+          <div>
+            <%= form.label :due_date, "Due Date", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :due_date, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+          </div>
+        </div>
+        <div>
+          <%= form.label :notes, "Notes", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+          <%= form.text_area :notes, rows: 3, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "Add any notes or instructions..." %>
+        </div>
+        <%= form.submit "Create Assignment", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Assignments List -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Current Assignments</h2>
+    <% if @assignments.any? %>
+      <div class="space-y-4">
+        <% @assignments.each do |assignment| %>
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-md transition-all duration-200">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <h3 class="font-bold text-gray-900"><%= assignment.assigned_to.email %></h3>
+                  <% status_badge = case assignment.status
+                    when 'pending'
+                      'bg-yellow-100 text-yellow-800'
+                    when 'in_progress'
+                      'bg-blue-100 text-blue-800'
+                    when 'completed'
+                      'bg-green-100 text-green-800'
+                    when 'reviewed'
+                      'bg-purple-100 text-purple-800'
+                    else
+                      'bg-gray-100 text-gray-800'
+                  end %>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full <%= status_badge %> capitalize">
+                    <%= assignment.status.gsub('_', ' ') %>
+                  </span>
+                  <% if assignment.priority.present? %>
+                    <% priority_badge = case assignment.priority
+                      when 'urgent'
+                        'bg-red-100 text-red-800'
+                      when 'high'
+                        'bg-orange-100 text-orange-800'
+                      when 'medium'
+                        'bg-yellow-100 text-yellow-800'
+                      else
+                        'bg-gray-100 text-gray-800'
+                    end %>
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full <%= priority_badge %> capitalize">
+                      <%= assignment.priority %>
+                    </span>
+                  <% end %>
+                </div>
+                <% if assignment.notes.present? %>
+                  <p class="text-sm text-gray-600 mb-2"><%= assignment.notes %></p>
+                <% end %>
+                <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+                  <% if assignment.assigned_by.present? %>
+                    <span>Assigned by: <%= assignment.assigned_by.email %></span>
+                  <% end %>
+                  <% if assignment.due_date.present? %>
+                    <span>Due: <%= assignment.due_date.strftime("%B %d, %Y at %I:%M %p") %></span>
+                  <% end %>
+                  <% if assignment.started_at.present? %>
+                    <span>Started: <%= time_ago_in_words(assignment.started_at) %> ago</span>
+                  <% end %>
+                  <% if assignment.completed_at.present? %>
+                    <span>Completed: <%= time_ago_in_words(assignment.completed_at) %> ago</span>
+                  <% end %>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <% if assignment.assigned_to == current_user || can_edit_menu_items?(@restaurant) %>
+                  <%= form_with model: [@restaurant, @menu_item, assignment], local: true, class: "inline" do |form| %>
+                    <%= form.hidden_field :status, value: assignment.status == 'pending' ? 'in_progress' : (assignment.status == 'in_progress' ? 'completed' : 'reviewed') %>
+                    <%= form.submit assignment.status == 'pending' ? 'Start' : (assignment.status == 'in_progress' ? 'Complete' : 'Mark Reviewed'), 
+                                    class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-200" %>
+                  <% end %>
+                <% end %>
+                <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                  <%= link_to restaurant_menu_item_assignment_path(@restaurant, @menu_item, assignment),
+                              data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this assignment?" },
+                              class: "bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 px-4 rounded-lg text-sm transition-all duration-200" do %>
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-200">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">No Assignments Yet</h3>
+        <p class="text-gray-600">Assign this menu item to team members to track work progress</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+

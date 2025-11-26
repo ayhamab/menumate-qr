@@ -1,0 +1,235 @@
+<% content_for :title, "#{@training_module.title} - Training Session" %>
+
+<div class="training-session-page" data-controller="training-session">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @training_module.title %></h1>
+        <p class="text-gray-600 text-lg">Training Session</p>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_training_module_path(@restaurant, @training_module), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-semibold text-gray-700">Progress</span>
+      <span class="text-sm font-bold text-indigo-600"><%= @answered_count %> / <%= @total_questions %> answered</span>
+    </div>
+    <div class="w-full bg-gray-200 rounded-full h-4">
+      <div class="bg-indigo-600 h-4 rounded-full transition-all duration-300" style="width: <%= @progress %>%"></div>
+    </div>
+  </div>
+
+  <!-- Results (if completed) -->
+  <% if @training_session.completed? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-2 <%= @training_session.passed? ? 'border-green-500' : 'border-red-500' %>">
+      <div class="text-center">
+        <% if @training_session.passed? %>
+          <div class="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-green-600 mb-2">Congratulations!</h2>
+          <p class="text-xl text-gray-700 mb-4">You passed with a score of <span class="font-bold text-green-600"><%= @training_session.score %>%</span></p>
+          <p class="text-gray-600">You have successfully completed this training module.</p>
+        <% else %>
+          <div class="bg-red-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-red-600 mb-2">Not Passed</h2>
+          <p class="text-xl text-gray-700 mb-4">Your score: <span class="font-bold text-red-600"><%= @training_session.score %>%</span></p>
+          <p class="text-gray-600 mb-6">Passing score required: <%= @training_module.passing_score %>%</p>
+          <% begin %>
+            <%= link_to restaurant_training_module_training_session_path(@restaurant, @training_module, @training_session), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <span>Review Answers & Retry</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_sessions/#{@training_session.id}", class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <span>Review Answers & Retry</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Current Question -->
+  <% if @current_question && !@training_session.completed? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <span class="bg-indigo-100 text-indigo-700 text-sm font-bold px-4 py-2 rounded-full">
+            Question <%= @current_question_index + 1 %> of <%= @total_questions %>
+          </span>
+          <% if @current_question.hint.present? %>
+            <button onclick="document.getElementById('hint-<%= @current_question.id %>').classList.toggle('hidden')" 
+                    class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Hint
+            </button>
+          <% end %>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4"><%= @current_question.question_text %></h2>
+        
+        <% if @current_question.hint.present? %>
+          <div id="hint-<%= @current_question.id %>" class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <p class="text-sm text-yellow-800"><strong>Hint:</strong> <%= @current_question.hint %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <%= form_with url: answer_restaurant_training_module_training_session_path(@restaurant, @training_module, @training_session), method: :post, local: true, class: "space-y-4" do |f| %>
+        <%= f.hidden_field :question_id, value: @current_question.id %>
+        
+        <% if @current_question.multiple_choice? || @current_question.true_false? %>
+          <div class="space-y-3">
+            <% @current_question.options.each_with_index do |option, index| %>
+              <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all duration-200 <%= 'border-indigo-500 bg-indigo-100' if @existing_answer&.selected_option&.to_s == index.to_s %>">
+                <%= f.radio_button :selected_option, index, checked: @existing_answer&.selected_option&.to_s == index.to_s, class: "mr-4 w-5 h-5 text-indigo-600" %>
+                <span class="text-gray-900 font-medium flex-1"><%= option %></span>
+              </label>
+            <% end %>
+          </div>
+        <% elsif @current_question.multiple_select? %>
+          <div class="space-y-3">
+            <% @current_question.options.each_with_index do |option, index| %>
+              <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all duration-200 <%= 'border-indigo-500 bg-indigo-100' if @existing_answer&.selected_option&.is_a?(Array) && @existing_answer.selected_option.include?(index.to_s) %>">
+                <%= check_box_tag "selected_options[]", index, @existing_answer&.selected_option&.is_a?(Array) && @existing_answer.selected_option.include?(index.to_s), class: "mr-4 w-5 h-5 text-indigo-600" %>
+                <span class="text-gray-900 font-medium flex-1"><%= option %></span>
+              </label>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="flex gap-4 pt-6">
+          <% if @current_question_index > 0 %>
+            <% begin %>
+              <%= link_to restaurant_training_module_training_session_path(@restaurant, @training_module, @training_session, question_index: @current_question_index - 1), class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+                Previous
+              <% end %>
+            <% rescue %>
+              <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_sessions/#{@training_session.id}?question_index=#{@current_question_index - 1}", class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+                Previous
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= f.submit "Next Question", class: "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Submit Button (when all answered) -->
+    <% if @answered_count >= @total_questions %>
+      <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-500 mt-8">
+        <div class="text-center">
+          <p class="text-lg font-semibold text-gray-900 mb-4">All questions answered!</p>
+          <% begin %>
+            <%= form_with url: submit_restaurant_training_module_training_session_path(@restaurant, @training_module, @training_session), method: :post, local: true, class: "inline" do |f| %>
+              <%= f.submit "Submit Training", class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" %>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/training_modules/#{@training_module.id}/training_sessions/#{@training_session.id}/submit", method: :post, class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg inline-block" do %>
+              Submit Training
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% elsif @training_session.completed? %>
+    <!-- Show all questions with answers -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Review Your Answers</h2>
+      <div class="space-y-6">
+        <% @training_module.training_questions.ordered.each_with_index do |question, index| %>
+          <% answer = @training_session.training_answers.find_by(training_question: question) %>
+          <div class="border-2 <%= answer&.correct? ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50' %> rounded-xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="bg-indigo-100 text-indigo-700 text-sm font-bold px-3 py-1 rounded-full">Question <%= index + 1 %></span>
+                  <% if answer&.correct? %>
+                    <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">Correct ✓</span>
+                  <% else %>
+                    <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">Incorrect ✗</span>
+                  <% end %>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3"><%= question.question_text %></h3>
+                
+                <div class="space-y-2">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-700 mb-1">Your Answer:</p>
+                    <p class="text-sm text-gray-900 bg-white rounded-lg p-3 border border-gray-200">
+                      <% if answer %>
+                        <% if question.options.present? %>
+                          <% selected_indices = answer.selected_option.is_a?(Array) ? answer.selected_option.map(&:to_i) : [answer.selected_option.to_i] %>
+                          <% selected_indices.each do |idx| %>
+                            <%= question.options[idx] if question.options[idx] %>
+                          <% end %>
+                        <% else %>
+                          <%= answer.selected_option_display %>
+                        <% end %>
+                      <% else %>
+                        <span class="text-gray-400">Not answered</span>
+                      <% end %>
+                    </p>
+                  </div>
+                  <% unless answer&.correct? %>
+                    <div>
+                      <p class="text-sm font-semibold text-green-700 mb-1">Correct Answer:</p>
+                      <p class="text-sm text-green-800 bg-green-100 rounded-lg p-3 border border-green-300">
+                        <% if question.options.present? %>
+                          <% correct_indices = question.correct_option.is_a?(Array) ? question.correct_option.map(&:to_i) : [question.correct_option.to_i] %>
+                          <% correct_indices.each do |idx| %>
+                            <%= question.options[idx] if question.options[idx] %>
+                          <% end %>
+                        <% else %>
+                          <%= question.options[question.correct_option.to_i] if question.options.present? %>
+                        <% end %>
+                      </p>
+                    </div>
+                  <% end %>
+                  <% if question.explanation.present? %>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+                      <p class="text-xs font-semibold text-blue-800 mb-1">Explanation:</p>
+                      <p class="text-sm text-blue-700"><%= question.explanation %></p>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,2 @@
+module MenuItems::ImportsHelper
+end

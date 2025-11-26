@@ -1,0 +1,288 @@
+<% content_for :title, "#{@recipe.name} - Recipe" %>
+
+<div class="recipe-show-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2"><%= @recipe.name %></h1>
+        <% if @recipe.menu_item.present? %>
+          <p class="text-gray-600 text-lg">Menu Item: <%= @recipe.menu_item.name %></p>
+        <% else %>
+          <p class="text-gray-500 text-lg italic">Standalone recipe</p>
+        <% end %>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_recipes_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/recipes", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+          <% begin %>
+            <%= link_to edit_restaurant_recipe_path(@restaurant, @recipe), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span>Edit</span>
+            <% end %>
+          <% rescue %>
+            <%= link_to "/restaurants/#{@restaurant.id}/recipes/#{@recipe.id}/edit", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span>Edit</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recipe Info Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-600">Base Servings</span>
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <p class="text-3xl font-extrabold text-gray-900"><%= @recipe.base_servings %></p>
+    </div>
+    
+    <% if @recipe.prep_time.present? && @recipe.prep_time > 0 %>
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-gray-600">Prep Time</span>
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <p class="text-3xl font-extrabold text-gray-900"><%= @recipe.prep_time %>m</p>
+      </div>
+    <% end %>
+    
+    <% if @recipe.cook_time.present? && @recipe.cook_time > 0 %>
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-gray-600">Cook Time</span>
+          <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <p class="text-3xl font-extrabold text-gray-900"><%= @recipe.cook_time %>m</p>
+      </div>
+    <% end %>
+    
+    <% if @recipe.difficulty.present? %>
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-gray-600">Difficulty</span>
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <p class="text-3xl font-extrabold text-gray-900 capitalize"><%= @recipe.difficulty %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Portion Scaling -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Adjust Portions</h2>
+    <div class="flex items-center gap-4 mb-6">
+      <label for="servings-input" class="text-sm font-semibold text-gray-700">Servings:</label>
+      <input type="number" 
+             id="servings-input" 
+             value="<%= @scaled_servings %>" 
+             min="1" 
+             step="1"
+             class="w-24 px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+             data-recipe-id="<%= @recipe.id %>"
+             data-base-servings="<%= @recipe.base_servings %>">
+      <button onclick="scaleRecipe()" 
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200">
+        Scale Recipe
+      </button>
+    </div>
+    <div id="scaled-ingredients" class="hidden">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Scaled Ingredients</h3>
+      <div id="scaled-list"></div>
+    </div>
+  </div>
+
+  <!-- Ingredients List -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Ingredients</h2>
+      <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+        <button onclick="document.getElementById('add-ingredient-form').classList.toggle('hidden')" 
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition-all duration-200 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Add Ingredient</span>
+        </button>
+      <% end %>
+    </div>
+    
+    <!-- Add Ingredient Form -->
+    <div id="add-ingredient-form" class="hidden bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200">
+      <%= form_with model: [@restaurant, @recipe, @recipe.recipe_ingredients.build], local: true, class: "space-y-4" do |f| %>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <%= f.label :ingredient_id, "Ingredient", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.collection_select :ingredient_id,
+                                    Ingredient.order(:name),
+                                    :id,
+                                    :name,
+                                    { prompt: "Select ingredient..." },
+                                    { required: true, class: "w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" } %>
+          </div>
+          <div>
+            <%= f.label :quantity, "Quantity", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.number_field :quantity, step: 0.01, min: 0, required: true, class: "w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "2.5" %>
+          </div>
+          <div>
+            <%= f.label :unit, "Unit", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.text_field :unit, class: "w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "cups, tbsp, oz, etc." %>
+          </div>
+          <div>
+            <%= f.label :preparation_method, "Preparation", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.text_field :preparation_method, class: "w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", placeholder: "chopped, diced, etc." %>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <%= f.submit "Add Ingredient", class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200" %>
+          <button type="button" onclick="document.getElementById('add-ingredient-form').classList.add('hidden')" 
+                  class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-xl transition-all duration-200">
+            Cancel
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Ingredients Table -->
+    <% if @recipe_ingredients.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Ingredient</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Quantity</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Unit</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Preparation</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Allergens</th>
+              <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Actions</th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @recipe_ingredients.each do |ri| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900"><%= ri.ingredient.name %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= ri.quantity %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= ri.unit || '-' %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= ri.preparation_method || '-' %></td>
+                <td class="px-4 py-3 text-sm">
+                  <% if ri.ingredient.has_allergen? %>
+                    <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">
+                      <%= ri.ingredient.allergen_display_name %>
+                    </span>
+                  <% else %>
+                    <span class="text-gray-400">-</span>
+                  <% end %>
+                </td>
+                <% if can_edit_menu_items?(@restaurant) || restaurant_owner?(@restaurant) %>
+                  <td class="px-4 py-3 text-sm">
+                    <%= link_to restaurant_recipe_recipe_ingredient_path(@restaurant, @recipe, ri),
+                                data: { turbo_method: :delete, turbo_confirm: "Remove this ingredient?" },
+                                class: "text-red-600 hover:text-red-800" do %>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    <% end %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 rounded-xl p-12 text-center border-2 border-dashed border-gray-200">
+        <p class="text-gray-600">No ingredients added yet. Add ingredients to build your recipe.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Instructions -->
+  <% if @recipe.instructions.present? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Instructions</h2>
+      <div class="prose max-w-none">
+        <p class="text-gray-700 whitespace-pre-wrap"><%= @recipe.instructions %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Description -->
+  <% if @recipe.description.present? %>
+    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mt-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Description</h2>
+      <p class="text-gray-700 whitespace-pre-wrap"><%= @recipe.description %></p>
+    </div>
+  <% end %>
+</div>
+
+<script>
+function scaleRecipe() {
+  const input = document.getElementById('servings-input');
+  const servings = parseInt(input.value);
+  const baseServings = parseInt(input.dataset.baseServings);
+  const recipeId = input.dataset.recipeId;
+  
+  if (servings < 1) {
+    alert('Servings must be at least 1');
+    return;
+  }
+  
+  // Fetch scaled recipe
+  fetch(`/restaurants/<%= @restaurant.id %>/recipes/${recipeId}/scale?servings=${servings}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const container = document.getElementById('scaled-list');
+    const scaledDiv = document.getElementById('scaled-ingredients');
+    
+    container.innerHTML = '<table class="w-full"><thead class="bg-indigo-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-indigo-700 uppercase">Ingredient</th><th class="px-4 py-3 text-left text-xs font-semibold text-indigo-700 uppercase">Quantity</th><th class="px-4 py-3 text-left text-xs font-semibold text-indigo-700 uppercase">Unit</th></tr></thead><tbody class="divide-y divide-gray-200">' +
+      data.ingredients.map(ing => 
+        `<tr class="hover:bg-gray-50"><td class="px-4 py-3 text-sm font-medium text-gray-900">${ing.name}</td><td class="px-4 py-3 text-sm text-gray-700">${ing.quantity}</td><td class="px-4 py-3 text-sm text-gray-700">${ing.unit || '-'}</td></tr>`
+      ).join('') +
+      '</tbody></table>';
+    
+    scaledDiv.classList.remove('hidden');
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error scaling recipe');
+  });
+}
+</script>
+

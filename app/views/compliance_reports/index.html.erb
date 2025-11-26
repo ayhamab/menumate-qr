@@ -1,0 +1,192 @@
+<% content_for :title, "Compliance Reports - #{@restaurant.name}" %>
+
+<div class="compliance-reports-page">
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Compliance Management</h1>
+        <p class="text-gray-600 text-lg"><%= @restaurant.name %></p>
+      </div>
+      <div class="flex gap-3">
+        <% begin %>
+          <%= link_to restaurant_path(@restaurant), class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}", class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            <span>Back</span>
+          <% end %>
+        <% end %>
+        <% begin %>
+          <%= link_to check_all_restaurant_compliance_reports_path(@restaurant), method: :post, class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Check All</span>
+          <% end %>
+        <% rescue %>
+          <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports/check_all", method: :post, class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Check All</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Region Registration -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Registered Regions</h2>
+      <% begin %>
+        <%= form_with url: restaurant_restaurant_regions_path(@restaurant), method: :post, local: true, class: "flex gap-3" do |f| %>
+          <%= f.select :region_id, 
+                       options_from_collection_for_select(Region.active.countries.ordered, :id, :name),
+                       { prompt: "Select Region..." },
+                       { class: "px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" } %>
+          <%= f.submit "Register Region", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200" %>
+        <% end %>
+      <% rescue %>
+        <form action="<%= "/restaurants/#{@restaurant.id}/restaurant_regions" %>" method="post" class="flex gap-3">
+          <select name="region_id" class="px-4 py-2 border-2 border-gray-300 rounded-lg">
+            <option value="">Select Region...</option>
+            <% Region.active.countries.ordered.each do |region| %>
+              <option value="<%= region.id %>"><%= region.name %></option>
+            <% end %>
+          </select>
+          <input type="submit" value="Register Region" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200">
+        </form>
+      <% end %>
+    </div>
+    
+    <% if @restaurant_regions.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% @restaurant_regions.each do |restaurant_region| %>
+          <% status = @compliance_status[restaurant_region.region_id] %>
+          <% status_class = status[:compliant] ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50' %>
+          <div class="p-4 rounded-xl border-2 <%= status_class %>">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-gray-900 mb-1"><%= restaurant_region.region.name %></h3>
+                <p class="text-xs text-gray-600"><%= restaurant_region.region.country_code.upcase %></p>
+              </div>
+              <% if status[:compliant] %>
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              <% else %>
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              <% end %>
+            </div>
+            <div class="space-y-2 mb-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Compliance:</span>
+                <span class="font-bold <%= status[:compliant] ? 'text-green-700' : 'text-red-700' %>">
+                  <%= status[:compliance_percentage] %>%
+                </span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Items:</span>
+                <span class="font-bold text-gray-900">
+                  <%= status[:compliant_items] %> / <%= status[:total_items] %>
+                </span>
+              </div>
+              <% if status[:issues] > 0 %>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Issues:</span>
+                  <span class="font-bold text-red-700"><%= status[:issues] %></span>
+                </div>
+              <% end %>
+            </div>
+            <div class="flex gap-2">
+              <% begin %>
+                <%= link_to generate_restaurant_compliance_report_path(@restaurant, region_id: restaurant_region.region_id), method: :post, class: "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-center" do %>
+                  Generate Report
+                <% end %>
+              <% rescue %>
+                <%= link_to "/restaurants/#{@restaurant.id}/compliance_reports/generate?region_id=#{restaurant_region.region_id}", method: :post, class: "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-center" do %>
+                  Generate Report
+                <% end %>
+              <% end %>
+              <% begin %>
+                <%= link_to restaurant_restaurant_region_path(@restaurant, restaurant_region), method: :delete, 
+                            data: { confirm: "Remove #{restaurant_region.region.name}?" },
+                            class: "bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all duration-200" do %>
+                  Remove
+                <% end %>
+              <% rescue %>
+                <%= link_to "/restaurants/#{@restaurant.id}/restaurant_regions/#{restaurant_region.id}", method: :delete,
+                            class: "bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-all duration-200" do %>
+                  Remove
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-8">
+        <p class="text-gray-600 mb-4">No regions registered. Register a region to start compliance checking.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Compliance Reports -->
+  <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Compliance Reports</h2>
+    
+    <% if @compliance_reports.any? %>
+      <div class="space-y-4">
+        <% @compliance_reports.each do |report| %>
+          <% begin %>
+            <%= link_to restaurant_compliance_report_path(@restaurant, report), class: "block p-6 bg-gray-50 rounded-xl hover:bg-emerald-50 transition-all duration-200 border-2 border-transparent hover:border-emerald-200" do %>
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-gray-900 mb-1"><%= report.title %></h3>
+                  <p class="text-sm text-gray-600">
+                    <%= report.region&.name || 'All Regions' %> • 
+                    <%= report.report_type.humanize %> • 
+                    <%= report.created_at.strftime("%B %d, %Y") %>
+                  </p>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold <%= report.compliance_percentage >= 100 ? 'text-green-600' : report.compliance_percentage >= 80 ? 'text-yellow-600' : 'text-red-600' %>">
+                    <%= report.compliance_percentage %>%
+                  </div>
+                  <p class="text-xs text-gray-600">Compliance</p>
+                </div>
+              </div>
+              <% if report.violation_count > 0 %>
+                <div class="bg-red-100 border border-red-300 rounded-lg p-3 mt-3">
+                  <p class="text-sm font-semibold text-red-800">
+                    <%= pluralize(report.violation_count, 'violation') %> found
+                  </p>
+                </div>
+              <% end %>
+            <% end %>
+          <% rescue %>
+            <div class="p-6 bg-gray-50 rounded-xl">
+              <h3 class="text-lg font-bold text-gray-900"><%= report.title %></h3>
+              <p class="text-sm text-gray-600"><%= report.compliance_percentage %>% compliance</p>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-8">
+        <p class="text-gray-600 mb-4">No compliance reports yet. Generate a report to check compliance status.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+

@@ -1,0 +1,8 @@
+<%= turbo_stream.update "dietary-report-section-#{@menu_item.id}", partial: "dietary_accuracy_reports/report_section", locals: { menu_item: @menu_item, restaurant: @restaurant } %>
+
+<% if @report.errors.any? %>
+  <%= turbo_stream.update "dietary-report-errors-#{@menu_item.id}", partial: "dietary_accuracy_reports/errors", locals: { report: @report } %>
+<% else %>
+  <%= turbo_stream.remove "dietary-report-errors-#{@menu_item.id}" if @report.errors.empty? %>
+<% end %>
+

@@ -1,0 +1,267 @@
+<% content_for :title, "API Documentation - MenuMate QR" %>
+
+<div class="api-documentation">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12 text-center">
+      <h1 class="text-5xl font-extrabold text-gray-900 mb-4">MenuMate QR API</h1>
+      <p class="text-xl text-gray-600 mb-6">Build powerful integrations with our RESTful API</p>
+      <div class="flex justify-center gap-4">
+        <% if user_signed_in? %>
+          <%= link_to api_keys_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+            Manage API Keys
+          <% end %>
+        <% else %>
+          <%= link_to new_user_registration_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+            Sign Up for API Access
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-xl p-8 mb-12 border-2 border-indigo-200">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Quick Start</h2>
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">1. Get Your API Key</h3>
+          <p class="text-gray-600 mb-3">Sign up and create an API key from your dashboard.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">2. Authenticate Requests</h3>
+          <p class="text-gray-600 mb-3">Include your API key in the <code class="bg-gray-200 px-2 py-1 rounded">X-API-Key</code> header:</p>
+          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>curl -H "X-API-Key: your_api_key_here" \
+  https://menumateqr.com/api/v1/restaurants</code></pre>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">3. Start Building</h3>
+          <p class="text-gray-600">Use our RESTful endpoints to manage restaurants, menu items, and QR codes programmatically.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Authentication -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-12 border border-gray-100">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Authentication</h2>
+      <p class="text-gray-600 mb-4">All API requests require authentication using an API key. You can provide the key in two ways:</p>
+      <div class="space-y-4">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Header (Recommended)</h3>
+          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>X-API-Key: your_api_key_here</code></pre>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Query Parameter</h3>
+          <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>?api_key=your_api_key_here</code></pre>
+        </div>
+      </div>
+      <div class="mt-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+        <p class="text-sm text-yellow-800"><strong>Rate Limits:</strong> 1000 requests per hour per API key. Rate limit headers are included in all responses.</p>
+      </div>
+    </div>
+
+    <!-- Endpoints -->
+    <div class="space-y-12">
+      <!-- Restaurants -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Restaurants</h2>
+        
+        <div class="space-y-8">
+          <!-- List Restaurants -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-green-500 text-white font-bold px-3 py-1 rounded">GET</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants</code>
+            </div>
+            <p class="text-gray-600 mb-4">Get a list of all restaurants owned by the authenticated user.</p>
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Query Parameters:</h4>
+              <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                <li><code>cuisine</code> - Filter by cuisine type</li>
+                <li><code>search</code> - Search by restaurant name</li>
+                <li><code>page</code> - Page number (default: 1)</li>
+                <li><code>per_page</code> - Items per page (default: 20, max: 100)</li>
+              </ul>
+            </div>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>{
+  "data": [
+    {
+      "id": 1,
+      "name": "The Gourmet Kitchen",
+      "description": "Fine dining experience",
+      "address": "123 Main St",
+      "phone_number": "(555) 123-4567",
+      "cuisine": "Italian",
+      "menu_items_count": 15,
+      "qr_scans_count": 42,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 1
+  }
+}</code></pre>
+          </div>
+
+          <!-- Get Restaurant -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-green-500 text-white font-bold px-3 py-1 rounded">GET</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:id</code>
+            </div>
+            <p class="text-gray-600 mb-4">Get details of a specific restaurant, including menu items.</p>
+          </div>
+
+          <!-- Create Restaurant -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-blue-500 text-white font-bold px-3 py-1 rounded">POST</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants</code>
+            </div>
+            <p class="text-gray-600 mb-4">Create a new restaurant.</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>{
+  "restaurant": {
+    "name": "New Restaurant",
+    "description": "Description here",
+    "address": "123 Main St",
+    "phone_number": "(555) 123-4567",
+    "cuisine": "Italian"
+  }
+}</code></pre>
+          </div>
+
+          <!-- Update Restaurant -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-yellow-500 text-white font-bold px-3 py-1 rounded">PATCH</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:id</code>
+            </div>
+            <p class="text-gray-600 mb-4">Update an existing restaurant.</p>
+          </div>
+
+          <!-- Delete Restaurant -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-red-500 text-white font-bold px-3 py-1 rounded">DELETE</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:id</code>
+            </div>
+            <p class="text-gray-600 mb-4">Delete a restaurant.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Items -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Menu Items</h2>
+        
+        <div class="space-y-8">
+          <!-- List Menu Items -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-green-500 text-white font-bold px-3 py-1 rounded">GET</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:restaurant_id/menu_items</code>
+            </div>
+            <p class="text-gray-600 mb-4">Get all menu items for a restaurant.</p>
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Query Parameters:</h4>
+              <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                <li><code>category</code> - Filter by category</li>
+                <li><code>search</code> - Search by name</li>
+                <li><code>dietary_tag</code> - Filter by dietary tag</li>
+                <li><code>page</code> - Page number</li>
+                <li><code>per_page</code> - Items per page</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Create Menu Item -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-blue-500 text-white font-bold px-3 py-1 rounded">POST</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:restaurant_id/menu_items</code>
+            </div>
+            <p class="text-gray-600 mb-4">Create a new menu item.</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>{
+  "menu_item": {
+    "name": "Caesar Salad",
+    "description": "Fresh romaine lettuce",
+    "price": 12.99,
+    "category": "Salads",
+    "dietary_tags": ["vegetarian"],
+    "allergens": ["dairy"],
+    "position": 1
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Codes -->
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">QR Codes</h2>
+        
+        <div class="space-y-8">
+          <!-- Generate QR Code -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-green-500 text-white font-bold px-3 py-1 rounded">GET</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:restaurant_id/qr_codes/generate</code>
+            </div>
+            <p class="text-gray-600 mb-4">Generate or retrieve QR code information for a restaurant.</p>
+          </div>
+
+          <!-- QR Code Stats -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="bg-green-500 text-white font-bold px-3 py-1 rounded">GET</span>
+              <code class="text-lg font-mono text-gray-800">/api/v1/restaurants/:restaurant_id/qr_codes/stats</code>
+            </div>
+            <p class="text-gray-600 mb-4">Get QR code scan statistics for a restaurant.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Responses -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mt-12 border border-gray-100">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Error Responses</h2>
+      <p class="text-gray-600 mb-4">All errors follow a consistent format:</p>
+      <pre class="bg-gray-900 text-red-400 p-4 rounded-lg overflow-x-auto"><code>{
+  "error": "Error type",
+  "message": "Human-readable error message"
+}</code></pre>
+      <div class="mt-6 space-y-4">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">401 Unauthorized</h3>
+          <p class="text-sm text-gray-600">Invalid or missing API key</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">429 Too Many Requests</h3>
+          <p class="text-sm text-gray-600">Rate limit exceeded</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">404 Not Found</h3>
+          <p class="text-sm text-gray-600">Resource not found</p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">422 Unprocessable Entity</h3>
+          <p class="text-sm text-gray-600">Validation errors</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support -->
+    <div class="bg-indigo-50 rounded-2xl shadow-xl p-8 mt-12 border-2 border-indigo-200 text-center">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Need Help?</h2>
+      <p class="text-gray-600 mb-6">Check out our documentation or contact support for assistance.</p>
+      <% if user_signed_in? %>
+        <%= link_to api_keys_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 inline-block" do %>
+          Manage API Keys
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

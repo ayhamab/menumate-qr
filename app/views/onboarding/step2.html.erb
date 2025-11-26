@@ -1,0 +1,123 @@
+<% content_for :title, "Step 2: Add Menu Items - MenuMate QR" %>
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Progress Bar -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-700">Step 2 of 4</span>
+        <span class="text-sm text-gray-500">50% Complete</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full" style="width: 50%"></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Add your menu items</h1>
+      <p class="text-gray-600 mb-8">Start with a few items - you can add more later!</p>
+
+      <%= form_with url: onboarding_create_step2_path(@restaurant), local: true, class: "space-y-6" do |f| %>
+        <div id="menu-items-container" class="space-y-4">
+          <!-- Quick Add Template -->
+          <template id="menu-item-template">
+            <div class="menu-item-form p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-5">
+                  <input type="text" name="menu_items[][name]" placeholder="Item name *" required
+                         class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-4">
+                  <input type="number" step="0.01" name="menu_items[][price]" placeholder="Price *" required min="0"
+                         class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-2">
+                  <select name="menu_items[][category]" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">Category</option>
+                    <% @sample_categories.each do |cat| %>
+                      <option value="<%= cat %>"><%= cat %></option>
+                    <% end %>
+                  </select>
+                </div>
+                <div class="md:col-span-1">
+                  <button type="button" onclick="this.closest('.menu-item-form').remove()" 
+                          class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 px-4 rounded-lg transition-all">
+                    ×
+                  </button>
+                </div>
+              </div>
+              <textarea name="menu_items[][description]" rows="2" placeholder="Description (optional)"
+                        class="w-full mt-3 px-4 py-2 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+            </div>
+          </template>
+
+          <!-- Initial 3 empty forms -->
+          <% 3.times do |i| %>
+            <div class="menu-item-form p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-5">
+                  <input type="text" name="menu_items[][name]" placeholder="Item name *" required
+                         class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-4">
+                  <input type="number" step="0.01" name="menu_items[][price]" placeholder="Price *" required min="0"
+                         class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-2">
+                  <select name="menu_items[][category]" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">Category</option>
+                    <% @sample_categories.each do |cat| %>
+                      <option value="<%= cat %>"><%= cat %></option>
+                    <% end %>
+                  </select>
+                </div>
+                <div class="md:col-span-1">
+                  <button type="button" onclick="this.closest('.menu-item-form').remove()" 
+                          class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 px-4 rounded-lg transition-all">
+                    ×
+                  </button>
+                </div>
+              </div>
+              <textarea name="menu_items[][description]" rows="2" placeholder="Description (optional)"
+                        class="w-full mt-3 px-4 py-2 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Add More Button -->
+        <button type="button" onclick="addMenuItemForm()" 
+                class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-3 px-6 rounded-xl border-2 border-dashed border-indigo-300 transition-all">
+          + Add Another Item
+        </button>
+
+        <!-- Navigation -->
+        <div class="flex gap-4 pt-6">
+          <% begin %>
+            <%= link_to onboarding_step1_path(@restaurant), class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+              ← Back
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding/step1?restaurant_id=#{@restaurant.id}", class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 text-center" do %>
+              ← Back
+            <% end %>
+          <% end %>
+          <%= f.submit "Continue →", class: "flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" %>
+          <button type="button" onclick="this.form.submit();" name="skip" value="true" 
+                  class="bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all duration-200">
+            Skip for Now
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function addMenuItemForm() {
+    const template = document.getElementById('menu-item-template');
+    const container = document.getElementById('menu-items-container');
+    const clone = template.content.cloneNode(true);
+    container.appendChild(clone);
+  }
+</script>
+

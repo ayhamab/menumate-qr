@@ -1,0 +1,112 @@
+<% content_for :title, "Menu Items - #{@restaurant.name} - MenuMate QR" %>
+
+<div class="menu-items-index" data-restaurant-id="<%= @restaurant.id %>">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div class="flex items-center gap-3">
+        <%= link_to restaurant_path(@restaurant), class: "text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        <% end %>
+        <div>
+          <h1 class="text-4xl font-extrabold text-gray-900">Menu Items</h1>
+          <p class="text-gray-600 mt-1"><%= @restaurant.name %></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <% if @brands.any? %>
+          <div class="flex items-center gap-2">
+            <label class="text-sm font-semibold text-gray-700">Filter by Brand:</label>
+            <%= select_tag :brand_filter, 
+                          options_from_collection_for_select([OpenStruct.new(id: nil, name: 'All Brands')] + @brands, :id, :name, @selected_brand&.id),
+                          { 
+                            class: "px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
+                            data: { 
+                              controller: "auto-submit",
+                              action: "change->auto-submit#submit"
+                            },
+                            onchange: "window.location.href = this.value ? '#{restaurant_menu_items_path(@restaurant)}?brand_id=' + this.value : '#{restaurant_menu_items_path(@restaurant)}'"
+                          } %>
+          </div>
+        <% end %>
+        <%= link_to restaurant_seasonal_menu_schedules_path(@restaurant), class: "bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>Seasonal Schedules</span>
+        <% end %>
+        <%= link_to new_restaurant_menu_items_import_path(@restaurant), class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          </svg>
+          <span>Import CSV</span>
+        <% end %>
+        <%= link_to new_restaurant_menu_item_path(@restaurant, brand_id: @selected_brand&.id), class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Add Menu Item</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turbo Stream Subscription -->
+  <%= turbo_stream_from "menu_updates_restaurant_#{@restaurant.id}" %>
+
+  <!-- Menu Items by Category -->
+  <% if @menu_items.any? %>
+    <div id="menu_items_container" class="space-y-8">
+      <% @menu_items_by_category.each do |category, items| %>
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">
+              <%= category.present? ? category : 'Uncategorized' %>
+              <span class="text-lg font-normal text-gray-500 ml-2">(<%= items.count %>)</span>
+            </h2>
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+              </svg>
+              <span>Drag to reorder</span>
+            </div>
+          </div>
+
+          <div 
+            class="space-y-4"
+            data-controller="sortable"
+            data-sortable-url-value="<%= reorder_restaurant_menu_items_path(@restaurant) %>"
+            data-sortable-target="element">
+            <% items.each do |item| %>
+              <%= render partial: "menu_items/menu_item_card", locals: { menu_item: item, restaurant: @restaurant } %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+      <svg class="w-20 h-20 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">No Menu Items Yet</h3>
+      <p class="text-gray-600 mb-6">Start building your menu by adding items individually or importing from a CSV file</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to new_restaurant_menu_items_import_path(@restaurant), class: "inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          </svg>
+          <span>Import from CSV</span>
+        <% end %>
+        <%= link_to new_restaurant_menu_item_path(@restaurant), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Add Menu Item</span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

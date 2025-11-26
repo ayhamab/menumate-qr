@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  menu_item: one
+  rating: 1
+  comment: MyText
+  ip_address: MyString
+
+two:
+  menu_item: two
+  rating: 1
+  comment: MyText
+  ip_address: MyString

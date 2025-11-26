@@ -1,0 +1,270 @@
+/* Accessibility Styles for WCAG 2.1 AA Compliance */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Show on focus for skip links */
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  z-index: 9999;
+  background-color: #4F46E5;
+  color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus visible styles for better keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Ensure all interactive elements have focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+  
+  button, a {
+    border: 2px solid currentColor;
+  }
+  
+  /* Ensure text is readable in high contrast */
+  .text-gray-600,
+  .text-gray-700 {
+    color: currentColor !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable hover transforms */
+  .transform,
+  .hover\:transform {
+    transform: none !important;
+  }
+  
+  /* Disable hover scale */
+  .hover\:scale-110 {
+    transform: none !important;
+  }
+}
+
+/* Ensure sufficient color contrast for text */
+.text-gray-600 {
+  color: #4B5563; /* Meets WCAG AA for normal text */
+}
+
+.text-gray-700 {
+  color: #374151; /* Meets WCAG AA for normal text */
+}
+
+/* Focus trap prevention - ensure users can always navigate */
+* {
+  scroll-margin-top: 2rem; /* Space for skip links */
+}
+
+/* Improve link visibility */
+a:not([class]) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Ensure form labels are always visible */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Error states should be clearly visible */
+[aria-invalid="true"] {
+  border-color: #DC2626 !important;
+  border-width: 2px !important;
+}
+
+/* Live region announcements */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live="polite"] {
+  position: static;
+  left: auto;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+/* Ensure buttons are keyboard accessible */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:focus {
+  outline: none;
+}
+
+/* Improve table accessibility */
+table {
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Ensure images have proper sizing */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve form field accessibility */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  min-height: 44px; /* Minimum touch target size */
+}
+
+/* Ensure sufficient spacing for touch targets */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improve visibility of required fields */
+[aria-required="true"]::after {
+  content: " *";
+  color: #DC2626;
+  font-weight: bold;
+}
+
+/* Ensure modals are keyboard accessible */
+[role="dialog"] {
+  outline: none;
+}
+
+[role="dialog"]:focus {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+}
+
+/* Improve visibility of landmarks */
+[role="main"],
+[role="navigation"],
+[role="banner"],
+[role="search"],
+[role="contentinfo"] {
+  outline: none;
+}
+
+/* Ensure list items are properly marked */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Improve visibility of status messages */
+[role="status"],
+[role="alert"] {
+  position: relative;
+}
+
+/* Ensure headings are properly structured */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+/* Improve visibility of links in navigation */
+nav a {
+  display: inline-block;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+nav a:focus {
+  outline: 2px solid #4F46E5;
+  outline-offset: 2px;
+}
+
+/* Ensure sufficient spacing for readability */
+p, li {
+  line-height: 1.6;
+}
+
+/* Improve visibility of error messages */
+[role="alert"] {
+  border-left: 4px solid #DC2626;
+  padding-left: 1rem;
+}
+
+/* Ensure skip links are accessible */
+a[href^="#"]:focus {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 9999;
+  background-color: #4F46E5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+

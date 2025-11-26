@@ -1,0 +1,86 @@
+<% content_for :title, "Welcome to MenuMate QR" %>
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center px-4 py-12">
+  <div class="max-w-4xl w-full">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center">
+      <!-- Logo/Icon -->
+      <div class="mb-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-4">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mb-4">
+          Welcome to MenuMate QR
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          Create your digital menu in minutes. No coding required.
+        </p>
+      </div>
+
+      <!-- Key Features -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="p-6 bg-indigo-50 rounded-xl">
+          <svg class="w-10 h-10 text-indigo-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">Quick Setup</h3>
+          <p class="text-sm text-gray-600">Get started in under 5 minutes</p>
+        </div>
+        <div class="p-6 bg-purple-50 rounded-xl">
+          <svg class="w-10 h-10 text-purple-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">QR Code Menu</h3>
+          <p class="text-sm text-gray-600">Contactless ordering made easy</p>
+        </div>
+        <div class="p-6 bg-pink-50 rounded-xl">
+          <svg class="w-10 h-10 text-pink-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="font-bold text-gray-900 mb-2">Easy Updates</h3>
+          <p class="text-sm text-gray-600">Change your menu anytime</p>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <% if respond_to?(:user_signed_in?) && user_signed_in? %>
+          <% begin %>
+            <%= link_to onboarding_step1_path, class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Get Started →
+            <% end %>
+          <% rescue %>
+            <%= link_to "/onboarding/step1", class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Get Started →
+            <% end %>
+          <% end %>
+        <% else %>
+          <% begin %>
+            <%= link_to new_user_session_path, class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Sign In to Start
+            <% end %>
+          <% rescue %>
+            <%= link_to "/users/sign_in", class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Sign In to Start
+            <% end %>
+          <% end %>
+          <% begin %>
+            <%= link_to new_user_registration_path, class: "bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Create Account
+            <% end %>
+          <% rescue %>
+            <%= link_to "/users/sign_up", class: "bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg" do %>
+              Create Account
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <p class="text-sm text-gray-500 mt-8">
+        Free to start • No credit card required • Setup in minutes
+      </p>
+    </div>
+  </div>
+</div>
+

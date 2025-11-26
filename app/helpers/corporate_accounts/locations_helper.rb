@@ -1,0 +1,2 @@
+module CorporateAccounts::LocationsHelper
+end
